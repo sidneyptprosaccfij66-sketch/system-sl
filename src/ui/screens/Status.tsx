@@ -32,7 +32,7 @@ export function StatusScreen() {
             <p className="status-player">{s.profile.name}</p>
             <div className="status-top">
               <div className="hero">
-                <span className="hero-num"><Counter value={xp.level} duration={600} /></span>
+                <span className="hero-num"><Counter value={xp.level} from={0} duration={1400} /></span>
                 <span className="sys hero-label">Level</span>
               </div>
               <span className="hero-divider" aria-hidden="true" />
@@ -46,7 +46,7 @@ export function StatusScreen() {
                 <span className="sys vital-label">XP</span>
                 <div className="vital-bar">
                   <ProgressBar value={xp.ratio} level={xp.level} label="Опыт до следующего уровня" />
-                  <span className="vital-num num"><Counter value={xp.into} />/{xp.needed}</span>
+                  <span className="vital-num num"><Counter value={xp.into} from={0} duration={1600} />/{xp.needed}</span>
                 </div>
               </div>
               <div className="vital">
@@ -59,13 +59,13 @@ export function StatusScreen() {
               <div className={`vital-penalty sys${penalties ? ' is-on' : ''}`}>Penalty: <span className="num">{penalties}</span></div>
             </div>
             <div className="holo-box stats">
-              {STATS.map((st) => {
+              {STATS.map((st, i) => {
                 const p = statProgress(s.profile.totals.stats[st]);
                 return (
-                  <div key={st} className="stat" title={STAT_NAMES[st]} data-stat={st} data-points={s.profile.totals.stats[st]}>
+                  <div key={st} className="stat" style={{ '--i': i } as React.CSSProperties} title={STAT_NAMES[st]} data-stat={st} data-points={s.profile.totals.stats[st]}>
                     <span className="stat-icon"><StatIcon stat={st} /></span>
                     <span className="sys stat-code">{st}:</span>
-                    <span className="stat-lv glow-text" data-stat-anchor={st}><Counter value={p.level} duration={500} /></span>
+                    <span className="stat-lv glow-text" data-stat-anchor={st}><Counter value={p.level} from={0} duration={1100} /></span>
                     <span className="stat-prog"><ProgressBar value={p.ratio} level={p.level} thin label={`${STAT_NAMES[st]}: ${p.into} из ${p.needed} до следующего уровня`} /></span>
                   </div>
                 );

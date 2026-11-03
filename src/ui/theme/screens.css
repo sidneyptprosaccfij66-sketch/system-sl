@@ -272,3 +272,46 @@
 .gate-card .panel-body { display: grid; gap: 18px; text-align: center; padding: 28px 22px; }
 .gate-card p { margin: 0; }
 .gate-msg { font-family: var(--font-sys); font-size: var(--t-lg); color: #fff; text-shadow: var(--text-glow); line-height: 1.4; }
+
+/* ---------- Status: boot intro + light ambient life ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .status-frame { animation: boot-frame 0.9s var(--ease-out) both; }
+  .status-frame::before, .status-frame::after {
+    background:
+      linear-gradient(90deg, transparent 0 42%, rgba(255, 255, 255, 0.95) 50%, transparent 58% 100%) -60% 0 / 40% 100% no-repeat,
+      linear-gradient(90deg, transparent, #6cc8ff 8%, #e9f8ff 50%, #6cc8ff 92%, transparent);
+    animation: bar-sweep 6.5s ease-in-out 1.2s infinite;
+  }
+  .status-frame::after { animation-delay: 4.4s; animation-direction: reverse; }
+  .status-frame .frame-side { animation: side-flicker 5.5s ease-in-out infinite; }
+  .status-frame .frame-side.is-right { animation-delay: 2.7s; }
+  .status .panel-body { overflow: hidden; }
+  .status .panel-body::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 28%;
+    background: linear-gradient(180deg, transparent, rgba(120, 200, 255, 0.07) 60%, rgba(160, 225, 255, 0.16) 96%, transparent);
+    pointer-events: none;
+    animation: scan 8s linear 1.4s infinite;
+    transform: translateY(-110%);
+  }
+  .status .hero-num { animation: breathe 4.5s ease-in-out 1.6s infinite; }
+  .status .stat { animation: rise 0.6s var(--ease-out) both; animation-delay: calc(0.45s + var(--i, 0) * 0.08s); }
+  .status .vitals, .status .stats { animation: fade-in 0.7s var(--ease-out) 0.35s both; }
+  .status .bar-fill { animation: bar-glow 3.6s ease-in-out 2s infinite; }
+}
+@keyframes boot-frame {
+  0% { transform: scaleY(0.04); opacity: 0; }
+  35% { transform: scaleY(0.04); opacity: 1; }
+  100% { transform: scaleY(1); opacity: 1; }
+}
+@keyframes bar-sweep { 0% { background-position: -60% 0, 0 0; } 55%, 100% { background-position: 160% 0, 0 0; } }
+@keyframes side-flicker { 0%, 100% { opacity: 1; } 46% { opacity: 0.55; } 48% { opacity: 1; } 52% { opacity: 0.7; } 54% { opacity: 1; } }
+@keyframes scan { 0% { transform: translateY(-110%); } 45%, 100% { transform: translateY(420%); } }
+@keyframes breathe { 0%, 100% { text-shadow: 0 0 18px rgba(140, 210, 255, 0.8), 0 0 2px #fff; } 50% { text-shadow: 0 0 30px rgba(140, 210, 255, 1), 0 0 60px rgba(76, 195, 255, 0.45), 0 0 2px #fff; } }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes bar-glow { 0%, 100% { box-shadow: 0 0 8px var(--accent-glow); } 50% { box-shadow: 0 0 16px rgba(120, 210, 255, 0.85); } }

@@ -2,9 +2,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { prefersReducedMotion } from './motion';
 
-export function Counter({ value, duration = 900, format = (n: number) => n.toLocaleString('ru-RU') }: { value: number; duration?: number; format?: (n: number) => string }) {
-  const [shown, setShown] = useState(value);
-  const from = useRef(value);
+/** `from` sets the starting number on first render (e.g. 0 for a count-up intro). */
+export function Counter({ value, from: start0, duration = 900, format = (n: number) => n.toLocaleString('ru-RU') }: { value: number; from?: number; duration?: number; format?: (n: number) => string }) {
+  const initial = start0 === undefined || prefersReducedMotion() ? value : start0;
+  const [shown, setShown] = useState(initial);
+  const from = useRef(initial);
   useEffect(() => {
     const start = from.current;
     if (start === value || prefersReducedMotion()) { from.current = value; setShown(value); return; }
