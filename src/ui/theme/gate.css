@@ -1,4 +1,4 @@
-/* Dungeon-gate badges for task difficulty — three candidate styles: rift, seal, hex. S is blood red. */
+/* Dungeon-gate badges for task difficulty: engraved square seals with corner brackets, escalating E → S (S is blood red). */
 .gate {
   --g: var(--gate-E);
   --size: 26px;
@@ -34,47 +34,16 @@
 .gate[data-rank='A'] .gate-letter { animation: gate-flicker 4s steps(1) infinite; }
 .gate.is-pulse { animation: gate-pulse 1.8s ease-in-out infinite; }
 
-/* ---------- 1. Rift: vertical tear in space ---------- */
-.gate.is-rift .gate-shape {
+/* ---------- 2. Seal: engraved metal square with corner brackets ---------- */
+.gate .gate-shape, .gate .gate-shape2 {
   position: absolute;
-  inset: 0 calc(var(--size) * var(--w, 0.22));
-  border-radius: 50%;
-  background:
-    radial-gradient(ellipse at 50% 50%, #000 0 35%, color-mix(in srgb, var(--g) 35%, #000) 62%, transparent 74%);
-  box-shadow: 0 0 calc(var(--size) * 0.12) color-mix(in srgb, var(--g) var(--glow, 40%), transparent), inset 0 0 calc(var(--size) * 0.1) color-mix(in srgb, var(--g) 80%, transparent);
-  border: 1px solid color-mix(in srgb, var(--g) 70%, transparent);
-}
-.gate.is-rift .gate-crack {
-  position: absolute;
-  top: 6%;
-  bottom: 6%;
-  left: 50%;
-  width: calc(var(--size) * 0.16);
-  transform: translateX(-50%);
-  background: linear-gradient(180deg, transparent, var(--g) 25%, #fff 50%, var(--g) 75%, transparent);
-  clip-path: polygon(50% 0, 70% 14%, 38% 28%, 66% 44%, 34% 58%, 62% 72%, 40% 86%, 50% 100%, 44% 86%, 26% 72%, 54% 58%, 22% 44%, 52% 28%, 30% 14%);
-  opacity: var(--crack, 0.35);
-  z-index: 1;
-}
-.gate.is-rift[data-rank='E'] { --w: 0.3; --glow: 10%; --crack: 0.25; }
-.gate.is-rift[data-rank='D'] { --w: 0.27; --glow: 30%; --crack: 0.4; }
-.gate.is-rift[data-rank='C'] { --w: 0.24; --glow: 45%; --crack: 0.55; }
-.gate.is-rift[data-rank='B'] { --w: 0.2; --glow: 60%; --crack: 0.7; }
-.gate.is-rift[data-rank='A'] { --w: 0.16; --glow: 75%; --crack: 0.85; }
-.gate.is-rift[data-rank='S'] { --w: 0.12; --glow: 95%; --crack: 1; }
-.gate.is-rift .gate-letter { font-size: calc(var(--font) * 0.85); }
-
-/* ---------- 2. Seal: engraved metal diamond ---------- */
-.gate.is-seal .gate-shape, .gate.is-seal .gate-shape2 {
-  position: absolute;
-  inset: 15%;
-  transform: rotate(45deg);
+  inset: 8%;
   border: 1.5px solid var(--g);
   background: linear-gradient(135deg, #1a1f29, #07090d 60%);
   box-shadow: inset 0 0 0 2px #07090d, inset 0 0 0 3px color-mix(in srgb, var(--g) 45%, transparent), 0 0 calc(var(--size) * 0.12) color-mix(in srgb, var(--g) var(--glow, 35%), transparent);
 }
-.gate.is-seal .gate-shape2 { transform: rotate(0deg); inset: 22%; background: none; box-shadow: none; opacity: 0.55; z-index: -1; }
-.gate.is-seal .gate-runes {
+.gate .gate-shape2 { transform: rotate(45deg); inset: 24%; background: none; box-shadow: none; border-width: 1px; opacity: 0.45; z-index: 1; }
+.gate .gate-runes {
   position: absolute;
   inset: -2%;
   background:
@@ -84,18 +53,17 @@
     radial-gradient(circle, var(--g) 0 45%, transparent 50%) 100% 50% / 12% 12% no-repeat;
   filter: drop-shadow(0 0 3px var(--g));
 }
-.gate.is-seal[data-rank='E'] { --glow: 0%; }
-.gate.is-seal[data-rank='E'] .gate-shape { border-color: #4b5361; }
-.gate.is-seal[data-rank='D'] { --glow: 25%; }
-.gate.is-seal[data-rank='C'] { --glow: 40%; }
-.gate.is-seal[data-rank='B'] { --glow: 55%; }
-.gate.is-seal[data-rank='A'] { --glow: 70%; }
-.gate.is-seal[data-rank='S'] { --glow: 95%; }
-.gate.is-seal[data-rank='S'] .gate-shape { background: radial-gradient(circle, #3a0009, #0a0003 70%), linear-gradient(135deg, #1a1f29, #07090d); }
-.gate.is-seal .gate-veins {
+.gate[data-rank='E'] { --glow: 0%; }
+.gate[data-rank='E'] .gate-shape { border-color: #4b5361; }
+.gate[data-rank='D'] { --glow: 25%; }
+.gate[data-rank='C'] { --glow: 40%; }
+.gate[data-rank='B'] { --glow: 55%; }
+.gate[data-rank='A'] { --glow: 70%; }
+.gate[data-rank='S'] { --glow: 95%; }
+.gate[data-rank='S'] .gate-shape { background: radial-gradient(circle, #3a0009, #0a0003 70%), linear-gradient(135deg, #1a1f29, #07090d); }
+.gate .gate-veins {
   position: absolute;
-  inset: 18%;
-  transform: rotate(45deg);
+  inset: 10%;
   background:
     linear-gradient(32deg, transparent 46%, rgba(255, 40, 60, 0.85) 48%, transparent 51%),
     linear-gradient(-58deg, transparent 58%, rgba(255, 40, 60, 0.7) 60%, transparent 62%),
@@ -104,39 +72,37 @@
   mix-blend-mode: screen;
 }
 
-/* ---------- 3. Hex: cracked threat plate ---------- */
-.gate.is-hex .gate-shape {
+/* Corner brackets, escalating E → S */
+.gate-corners {
   position: absolute;
-  inset: 0;
-  clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0 50%);
-  background: var(--g);
-}
-.gate.is-hex .gate-shape::after {
-  content: '';
-  position: absolute;
-  inset: 1.5px;
-  clip-path: inherit;
-  background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--g) 22%, #0b0e14), #05070b 75%);
-}
-.gate.is-hex { filter: drop-shadow(0 0 calc(var(--size) * 0.08) color-mix(in srgb, var(--g) var(--glow, 35%), transparent)); }
-.gate.is-hex .gate-cracks {
-  position: absolute;
-  inset: 0;
-  clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0 50%);
+  inset: calc(var(--size) * -0.1);
+  pointer-events: none;
+  --l: calc(var(--size) * 0.26);
+  --t: var(--ct, 1px);
+  --cc: var(--g);
   background:
-    linear-gradient(62deg, transparent 47%, var(--g) 48.5%, transparent 50%) 0 0 / 60% 60% no-repeat,
-    linear-gradient(-35deg, transparent 47%, var(--g) 48.5%, transparent 50%) 100% 100% / 55% 55% no-repeat,
-    linear-gradient(15deg, transparent 47%, var(--g) 48.5%, transparent 50%) 100% 0 / 45% 50% no-repeat;
-  filter: drop-shadow(0 0 2px var(--g));
-  opacity: var(--crack, 0.8);
-  z-index: 2;
+    linear-gradient(var(--cc), var(--cc)) top left / var(--l) var(--t),
+    linear-gradient(var(--cc), var(--cc)) top left / var(--t) var(--l),
+    linear-gradient(var(--cc), var(--cc)) top right / var(--l) var(--t),
+    linear-gradient(var(--cc), var(--cc)) top right / var(--t) var(--l),
+    linear-gradient(var(--cc), var(--cc)) bottom left / var(--l) var(--t),
+    linear-gradient(var(--cc), var(--cc)) bottom left / var(--t) var(--l),
+    linear-gradient(var(--cc), var(--cc)) bottom right / var(--l) var(--t),
+    linear-gradient(var(--cc), var(--cc)) bottom right / var(--t) var(--l);
+  background-repeat: no-repeat;
+  opacity: var(--co, 1);
+  filter: drop-shadow(0 0 var(--cg, 0px) var(--g));
 }
-.gate.is-hex[data-rank='E'] { --glow: 0%; --g: #4b5361; }
-.gate.is-hex[data-rank='D'] { --glow: 25%; }
-.gate.is-hex[data-rank='C'] { --glow: 40%; }
-.gate.is-hex[data-rank='B'] { --glow: 55%; }
-.gate.is-hex[data-rank='A'] { --glow: 70%; --crack: 0.7; }
-.gate.is-hex[data-rank='S'] { --glow: 100%; --crack: 1; }
+.gate.is-chip .gate-corners { inset: -3px; --l: 7px; }
+.gate[data-rank='E'] .gate-corners { --ct: 1px; --co: 0.45; --cc: #6b7280; }
+.gate[data-rank='D'] .gate-corners { --ct: 1px; --co: 0.7; --cg: 2px; }
+.gate[data-rank='C'] .gate-corners { --ct: 1.5px; --co: 0.85; --cg: 3px; }
+.gate[data-rank='B'] .gate-corners { --ct: 1.5px; --cg: 4px; }
+.gate[data-rank='A'] .gate-corners { --ct: 2px; --cg: 5px; }
+.gate[data-rank='S'] .gate-corners { --ct: 2px; --cg: 7px; animation: gate-corner-pulse 1.8s ease-in-out infinite; }
+.gate.is-hero[data-rank='A'] .gate-corners, .gate.is-hero[data-rank='S'] .gate-corners { --ct: 3px; }
+@keyframes gate-corner-pulse { 0%, 100% { inset: calc(var(--size) * -0.1); } 50% { inset: calc(var(--size) * -0.15); } }
+.gate.is-chip[data-rank='S'] .gate-corners { animation: none; }
 
 @keyframes gate-pulse {
   0%, 100% { filter: drop-shadow(0 0 4px rgba(255, 31, 61, 0.55)); }
