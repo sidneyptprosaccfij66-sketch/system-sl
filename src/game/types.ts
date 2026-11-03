@@ -27,7 +27,9 @@ export interface Task {
   rank: Rank;
   points: number;
   dueDay?: DayKey;
+  /** Start 'HH:mm' (dueTime) and optional end 'HH:mm' of the time range. */
   dueTime?: string;
+  endTime?: string;
   status: 'open' | 'done' | 'failed' | 'archived';
   checklist?: ChecklistItem[];
   victory?: string;

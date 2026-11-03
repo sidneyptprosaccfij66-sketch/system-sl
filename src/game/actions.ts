@@ -10,7 +10,7 @@ export class MainQuestLimitError extends GameError { constructor() { super('MAIN
 export class NotFoundError extends GameError { constructor(what: string) { super('NOT_FOUND', `${what} не найдено`); } }
 
 export type TaskInput = Pick<Task, 'kind' | 'title' | 'stat' | 'rank'> &
-  Partial<Pick<Task, 'points' | 'questType' | 'dueDay' | 'dueTime' | 'checklist' | 'victory' | 'note' | 'skillId' | 'recurringId' | 'ideaId' | 'source' | 'penalize' | 'calendarId' | 'calendarEventId'>>;
+  Partial<Pick<Task, 'points' | 'questType' | 'dueDay' | 'dueTime' | 'endTime' | 'checklist' | 'victory' | 'note' | 'skillId' | 'recurringId' | 'ideaId' | 'source' | 'penalize' | 'calendarId' | 'calendarEventId'>>;
 
 const put = (tasks: Task[]): Outcome => { const c = emptyChanges(); c.put.tasks = tasks; return { changes: c, events: [] }; };
 const getTask = (s: GameState, id: string): Task => { const t = s.tasks[id]; if (!t) throw new NotFoundError('Задание'); return t; };
@@ -89,7 +89,7 @@ export function rescheduleTask(s: GameState, ctx: Ctx, id: string, newDay: DayKe
   if (!canReschedule(s, ctx.now, t)) throw new RescheduleLockedError();
   if (newDay !== undefined && newDay < todayKey(s, ctx.now)) throw new GameError('PAST_DAY', 'Нельзя перенести в прошлое');
   const next: Task = { ...t, dueDay: newDay };
-  if (newDay === undefined) delete next.dueTime;
+  if (newDay === undefined) { delete next.dueTime; delete next.endTime; }
   return put([next]);
 }
 

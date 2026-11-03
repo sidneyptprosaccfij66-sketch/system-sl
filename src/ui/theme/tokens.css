@@ -36,6 +36,14 @@
   --rank-A: #ff9b3d;
   --rank-S: #ffd34d;
 
+  /* Dungeon gates (task difficulty) */
+  --gate-E: #7d8796;
+  --gate-D: #2fbf71;
+  --gate-C: #3b8cff;
+  --gate-B: #8b5cf6;
+  --gate-A: #ff6a2b;
+  --gate-S: #ff1f3d;
+
   /* Type (A: geometric, closest to the anime's system UI) */
   --font-sys: 'Jost', 'Onest', system-ui, sans-serif;
   --font-head: 'Jost', 'Onest', system-ui, sans-serif;

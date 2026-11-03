@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 import '../src/ui/theme/tokens.css';
 import '../src/ui/theme/base.css';
 import '../src/ui/theme/rank.css';
+import '../src/ui/theme/gate.css';
 import './proto.css';
 import { STATS, STAT_NAMES, type GameEvent, type Rank, type StatCode } from '../src/game/types';
 import { createEventQueue } from '../src/ui/fx/eventQueue';
@@ -15,6 +16,8 @@ import { flyToStat } from '../src/ui/fx/flyToStat';
 import { isSoundEnabled, setSoundEnabled } from '../src/ui/fx/sound';
 import { StatIcon } from '../src/ui/fx/statIcons';
 import { RankBadge } from '../src/ui/fx/rankBadge';
+import { GateBadge } from '../src/ui/fx/gateBadge';
+import { DayTimeline } from '../src/ui/components/DayTimeline';
 
 // Local copies of the spec formulas — the prototype only needs to look right.
 const totalXp = (L: number) => 100 * (L - 1) + 25 * (L - 1) * (L - 2);
@@ -23,12 +26,15 @@ const ptsFor = (L: number) => (L * (L + 1)) / 2 - 1;
 const statLv = (p: number) => { let L = 1; while (ptsFor(L + 1) <= p) L++; return L; };
 const hunter = (L: number): Rank => (L >= 75 ? 'S' : L >= 50 ? 'A' : L >= 35 ? 'B' : L >= 20 ? 'C' : L >= 10 ? 'D' : 'E');
 
-interface DemoTask { id: string; title: string; stat: StatCode; rank: Rank; points: number; done: boolean }
+interface DemoTask { id: string; title: string; stat: StatCode; rank: Rank; points: number; done: boolean; start?: string; end?: string; fromCalendar?: boolean }
 const TASKS: DemoTask[] = [
-  { id: 't1', title: 'Лаба по ИСиТ: отчёт и защита', stat: 'INT', rank: 'C', points: 3, done: false },
-  { id: 't2', title: 'Тренировка: ноги и спина', stat: 'STR', rank: 'B', points: 5, done: false },
+  { id: 't1', title: 'Лаба по ИСиТ: отчёт и защита', stat: 'INT', rank: 'C', points: 3, done: false, start: '10:00', end: '11:30' },
+  { id: 't5', title: 'Пара: Управление данными', stat: 'INT', rank: 'D', points: 2, done: false, start: '12:00', end: '13:30', fromCalendar: true },
+  { id: 't2', title: 'Тренировка: ноги и спина', stat: 'STR', rank: 'B', points: 5, done: false, start: '18:00', end: '19:30' },
+  { id: 't4', title: 'Позвонить родителям', stat: 'CHA', rank: 'E', points: 1, done: false, start: '20:00', end: '20:20' },
   { id: 't3', title: 'Разобрать стол и вынести мусор', stat: 'DIS', rank: 'D', points: 2, done: false },
-  { id: 't4', title: 'Позвонить родителям', stat: 'CHA', rank: 'E', points: 1, done: false },
+  { id: 't6', title: 'Дописать курсовую: глава 2', stat: 'INT', rank: 'A', points: 8, done: false, start: '15:00', end: '17:00' },
+  { id: 't7', title: 'Скетч для портфолио', stat: 'MST', rank: 'S', points: 13, done: false, start: '15:30', end: '16:30' },
 ];
 const HABITS = [
   { id: 'h1', title: '50 отжиманий', stat: 'STR' as StatCode },
@@ -193,7 +199,7 @@ function App() {
                   <div key={h.id} className={`row${on ? ' is-done' : ''}`} ref={(el) => { rows.current[h.id] = el; }}>
                     <button className="check" role="checkbox" aria-checked={on} aria-label={h.title} onClick={() => toggleHabit(h.id, h.stat, rows.current[h.id])} />
                     <span className="row-title">{h.title}</span>
-                    <span className="stat-code small">{h.stat}</span>
+                    <span className="reward">+2 {h.stat}</span>
                   </div>
                 );
               })}
@@ -204,31 +210,45 @@ function App() {
         <section className="panel">
           <div className="panel-body">
             <h2 className="holo-title list-title">Сегодня</h2>
+            <p className="tl-section">В течение дня</p>
             <div className="list">
-              {tasks.map((t) => (
+              {tasks.filter((t) => !t.start).map((t) => (
                 <div key={t.id} className={`row${t.done ? ' is-done' : ''}`} ref={(el) => { rows.current[t.id] = el; }}>
                   <button className="check" role="checkbox" aria-checked={t.done} aria-label={t.title} onClick={() => complete(t)} />
                   <span className="row-title">{t.title}</span>
-                  <span className="stat-code small">{t.stat}</span>
-                  <RankBadge rank={t.rank} label={`Ранг задания ${t.rank}`} />
+                  <span className="reward">+{t.points} {t.stat}</span>
+                  <GateBadge rank={t.rank} />
                 </div>
               ))}
             </div>
+            <p className="tl-section">По времени</p>
+            <DayTimeline
+              items={tasks.filter((t) => t.start).map((t) => ({ id: t.id, title: t.title, start: t.start!, end: t.end!, stat: t.stat, rank: t.rank, points: t.points, done: t.done, fromCalendar: t.fromCalendar }))}
+              onToggle={(id) => { const t = tasks.find((x) => x.id === id); if (t) void complete(t); }}
+              rowRef={(id, el) => { rows.current[id] = el; }}
+            />
           </div>
         </section>
 
         <section className="panel">
           <div className="panel-body">
             <h2 className="holo-title list-title">Ранги</h2>
+            <p className="tl-section">Твой ранг охотника</p>
             <div className="rank-showcase">
               {(['E', 'D', 'C', 'B', 'A', 'S'] as Rank[]).map((r) => (
                 <div key={r} className="rank-cell"><RankBadge rank={r} size="hero" /></div>
               ))}
             </div>
-            <div className="rank-chips">
-              {(['E', 'D', 'C', 'B', 'A', 'S'] as Rank[]).map((r) => <RankBadge key={r} rank={r} />)}
+            <p className="tl-section">Сложность заданий — врата подземелий</p>
+            <div className="rank-showcase is-gates">
+              {(['E', 'D', 'C', 'B', 'A', 'S'] as Rank[]).map((r) => (
+                <div key={r} className="rank-cell"><GateBadge rank={r} size="hero" /></div>
+              ))}
             </div>
-            <p className="quest-sub">Так ранги выглядят у заданий</p>
+            <div className="rank-chips">
+              {(['E', 'D', 'C', 'B', 'A', 'S'] as Rank[]).map((r) => <GateBadge key={r} rank={r} />)}
+            </div>
+            <p className="quest-sub">Сложность задания: E = 1 очко, D = 2, C = 3, B = 5, A = 8, S = 13</p>
           </div>
         </section>
 
