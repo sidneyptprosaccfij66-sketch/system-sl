@@ -27,11 +27,12 @@ function GateScreen({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function Root() {
+/** `forceDemo` lets a prototype run the real app on demo data without URL parameters. */
+export function Root({ forceDemo = false }: { forceDemo?: boolean } = {}) {
   const [phase, setPhase] = useState<Phase>({ kind: 'loading' });
   const [engine, setEngine] = useState<Engine | null>(null);
   const api = useRef<FirebaseApi | null>(null);
-  const demo = readDemoParams(location.search);
+  const demo = forceDemo ? { ...readDemoParams(location.search), demo: true } : readDemoParams(location.search);
 
   const startEngine = async (e: Engine, name: string) => {
     setEngine(e);

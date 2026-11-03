@@ -9,7 +9,12 @@ const require = createRequire('/opt/npm-tools/node_modules/');
 const esbuild = require('esbuild');
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const NODE_PATHS = ['/opt/npm-tools/node_modules'];
-const proto = process.argv.includes('--proto');
+const protoArg = process.argv.find((a) => a.startsWith('--proto'));
+const proto = Boolean(protoArg);
+const protoName = protoArg?.includes('=') ? protoArg.split('=')[1] : '';
+const PROTO = protoName
+  ? { entry: `prototype-${protoName}/main.tsx`, out: `dist-proto-${protoName}`, title: 'THE SYSTEM Holo' }
+  : { entry: 'prototype/main.tsx', out: 'dist-proto', title: 'Прототип THE SYSTEM' };
 const dev = process.argv.includes('--dev');
 
 const common = {
@@ -44,12 +49,12 @@ async function buildApp() {
 }
 
 async function buildProto() {
-  const out = path.join(root, 'dist-proto');
+  const out = path.join(root, PROTO.out);
   await rm(out, { recursive: true, force: true });
   await mkdir(out, { recursive: true });
   const res = await esbuild.build({
     ...common,
-    entryPoints: ['prototype/main.tsx'],
+    entryPoints: [PROTO.entry],
     write: false,
     outdir: out,
     loader: { ...common.loader, '.woff': 'dataurl', '.woff2': 'dataurl' },
@@ -58,15 +63,15 @@ async function buildProto() {
   const css = res.outputFiles.find((f) => f.path.endsWith('.css'))?.text ?? '';
   const html = `<!doctype html><html lang="ru"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Прототип THE SYSTEM</title><style>${css}</style></head>
+<title>${PROTO.title}</title><style>${css}</style></head>
 <body><div id="root"></div><script type="module">${js.replaceAll('</script', '<\\/script')}</script></body></html>`;
   await writeFile(path.join(out, 'index.html'), html);
   // Artifact variant: the host wraps the page in its own skeleton.
-  const fragment = `<title>Прототип THE SYSTEM</title>
+  const fragment = `<title>${PROTO.title}</title>
 <style>:root{color-scheme:dark}${css}</style>
 <div id="root"></div><script type="module">${js.replaceAll('</script', '<\\/script')}</script>`;
   await writeFile(path.join(out, 'artifact.html'), fragment);
-  console.log(`built dist-proto/index.html (${(html.length / 1024).toFixed(0)} KB)`);
+  console.log(`built ${PROTO.out}/index.html (${(html.length / 1024).toFixed(0)} KB)`);
 }
 
 await (proto ? buildProto() : buildApp());
