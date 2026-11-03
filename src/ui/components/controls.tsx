@@ -65,3 +65,38 @@ export function Sheet({ title, onClose, children }: { title: string; onClose: ()
     </div>
   );
 }
+
+const HOURS = Array.from({ length: 24 }, (_, h) => String(h).padStart(2, '0'));
+const MINUTES = Array.from({ length: 12 }, (_, i) => String(i * 5).padStart(2, '0'));
+
+/** 24-hour time in Moscow: two selects, value 'HH:mm' or '' (not set). */
+export function TimeField({ label, value, onChange, disabled }: { label: string; value: string; onChange: (v: string) => void; disabled?: boolean }) {
+  const [h, m] = value ? value.split(':') : ['', ''];
+  const mins = m && !MINUTES.includes(m) ? [...MINUTES, m].sort() : MINUTES;
+  return (
+    <span className="time-field" role="group" aria-label={label}>
+      <span className="field-label">{label}</span>
+      <select className="select" aria-label={`${label}: часы`} value={h} disabled={disabled}
+        onChange={(e) => onChange(e.target.value ? `${e.target.value}:${m || '00'}` : '')}>
+        <option value="">--</option>
+        {HOURS.map((x) => <option key={x} value={x}>{x}</option>)}
+      </select>
+      <span className="muted">:</span>
+      <select className="select" aria-label={`${label}: минуты`} value={h ? m : ''} disabled={disabled || !h}
+        onChange={(e) => onChange(`${h}:${e.target.value}`)}>
+        {!h && <option value="">--</option>}
+        {mins.map((x) => <option key={x} value={x}>{x}</option>)}
+      </select>
+    </span>
+  );
+}
+
+export function TimeRange({ from, to, setFrom, setTo, now, disabled }: { from: string; to: string; setFrom: (v: string) => void; setTo: (v: string) => void; now: string; disabled?: boolean }) {
+  return (
+    <div className="time-range">
+      <TimeField label="С" value={from} disabled={disabled} onChange={(v) => { setFrom(v); if (!v) setTo(''); }} />
+      <TimeField label="До" value={to} disabled={disabled || !from} onChange={setTo} />
+      <span className="hint">Сейчас {now} МСК</span>
+    </div>
+  );
+}

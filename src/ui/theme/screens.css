@@ -145,6 +145,11 @@
 .qa-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .qa-row.is-between { justify-content: space-between; }
 .time-row { display: flex; gap: 8px; align-items: center; }
+.time-range { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 16px; }
+.time-range .hint { flex-basis: 100%; }
+.time-field { display: inline-flex; align-items: center; gap: 6px; }
+.time-field .field-label { min-width: 1.6em; }
+.time-field .select { width: auto; min-width: 4.2rem; padding-inline: 10px; font-family: var(--font-num); }
 .time-row .input { width: 7.5rem; }
 
 .seg { display: inline-flex; flex-wrap: wrap; gap: 6px; }

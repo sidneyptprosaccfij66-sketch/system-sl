@@ -39,7 +39,9 @@ test('restriction switches persist after reload', () => withApp('', async ({ pag
 
 test('journal lists a completed task', () => withApp('', async ({ page }) => {
   const today = await nav(page, 'Сегодня');
-  await today.getByRole('checkbox', { name: 'Разобрать стол и вынести мусор' }).click();
+  const box = today.getByRole('checkbox', { name: 'Разобрать стол и вынести мусор' });
+  await box.click();
+  await page.waitForFunction((el) => el.getAttribute('aria-checked') === 'true', await box.elementHandle());
   const more = await nav(page, 'Ещё');
   await more.getByRole('link', { name: /Журнал/ }).click();
   await page.locator('[data-ledger]', { hasText: '+2 DIS' }).first().waitFor();

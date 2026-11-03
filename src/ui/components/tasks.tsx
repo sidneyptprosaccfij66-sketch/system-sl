@@ -9,8 +9,8 @@ import { addDays } from '../../game/time';
 import { useEngine, useGame } from '../../app/store';
 import { GateBadge } from '../fx/gateBadge';
 import { flyToStat } from '../fx/flyToStat';
-import { Field, RankPicker, Sheet, StatPicker } from './controls';
-import { relDay } from './format';
+import { Field, RankPicker, Sheet, StatPicker, TimeRange } from './controls';
+import { clock, relDay } from './format';
 
 /** Completes or un-completes a task with the fly-to-stat effect. */
 export function useToggleTask() {
@@ -85,13 +85,7 @@ export function QuickAdd({ defaultDate = 'today' }: { defaultDate?: DateChoice }
             ))}
           </div>
         </div>
-        {date !== 'none' && (
-          <div className="time-row">
-            <input className="input" type="time" aria-label="С" value={from} onChange={(e) => setFrom(e.target.value)} />
-            <span className="muted">—</span>
-            <input className="input" type="time" aria-label="До" value={to} onChange={(e) => setTo(e.target.value)} />
-          </div>
-        )}
+        {date !== 'none' && <TimeRange from={from} to={to} setFrom={setFrom} setTo={setTo} now={clock(engine.now())} />}
         <button className="btn" type="submit">Добавить</button>
         </>}
       </div>
@@ -156,13 +150,7 @@ export function TaskEditor({ target, onClose }: { target: EditorTarget; onClose:
       </div>
       <RankPicker value={rank} onChange={setRank} />
       <Field label="Дата"><input className="input" type="date" value={dueDay} min={t ? undefined : today} disabled={Boolean(lockedReschedule)} onChange={(e) => setDueDay(e.target.value)} /></Field>
-      {dueDay && (
-        <div className="time-row">
-          <input className="input" type="time" aria-label="С" value={from} disabled={Boolean(lockedReschedule)} onChange={(e) => setFrom(e.target.value)} />
-          <span className="muted">—</span>
-          <input className="input" type="time" aria-label="До" value={to} disabled={Boolean(lockedReschedule)} onChange={(e) => setTo(e.target.value)} />
-        </div>
-      )}
+      {dueDay && <TimeRange from={from} to={to} setFrom={setFrom} setTo={setTo} now={clock(engine.now())} disabled={Boolean(lockedReschedule)} />}
       {isQuest && (
         <>
           <Field label="Условие победы"><input className="input" value={victory} onChange={(e) => setVictory(e.target.value)} /></Field>

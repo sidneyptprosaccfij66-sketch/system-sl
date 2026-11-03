@@ -20,7 +20,16 @@ const KEYS = { 'Статус': 'status', 'Сегодня': 'today', 'Задан�
 /** Clicks a menu item and returns the locator of its section in the feed. */
 export async function nav(page, name) {
   await page.getByRole('navigation', { name: 'Разделы' }).getByRole('link', { name, exact: true }).click();
-  return page.locator(`[data-section="${KEYS[name]}"]`);
+  const sec = page.locator(`[data-section="${KEYS[name]}"]`);
+  // wait until the smooth scroll has settled
+  let last = NaN;
+  for (let i = 0; i < 40; i++) {
+    const top = await sec.evaluate((el) => Math.round(el.getBoundingClientRect().top));
+    if (top === last) break;
+    last = top;
+    await page.waitForTimeout(80);
+  }
+  return sec;
 }
 export async function waitWindow(page, title) {
   await page.locator('[role=status]', { hasText: title }).first().waitFor({ timeout: 4000 });
