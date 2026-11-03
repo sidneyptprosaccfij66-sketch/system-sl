@@ -1,5 +1,5 @@
 // Service worker: app shell cache. Version is injected at build time.
-const CACHE = 'system-mw0s4jmm';
+const CACHE = 'system-mw0s5x88';
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(['./', './index.html', './app.js', './app.css', './manifest.webmanifest'])).then(() => self.skipWaiting()));
 });
