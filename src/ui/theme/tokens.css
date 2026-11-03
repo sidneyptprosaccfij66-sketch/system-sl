@@ -47,9 +47,11 @@
 
   /* Holographic glass */
   --holo-line: rgba(205, 236, 255, 0.85);
-  --holo-glow: 0 0 6px rgba(120, 200, 255, 0.55), 0 0 18px rgba(60, 150, 255, 0.28);
+  --holo-glow: 0 0 6px rgba(120, 200, 255, 0.45), 0 0 18px rgba(60, 150, 255, 0.22);
+  --holo-glow-strong: 0 0 10px rgba(140, 210, 255, 0.75), 0 0 28px rgba(60, 150, 255, 0.4);
   --holo-glow-inset: inset 0 0 14px rgba(90, 180, 255, 0.16);
-  --glass: rgba(6, 12, 22, 0.8);
+  --glass: rgba(8, 18, 34, 0.42);
+  --holo-line-soft: rgba(205, 236, 255, 0.4);
   --text-glow: 0 0 10px rgba(140, 210, 255, 0.55);
 
   /* Scale (1.25 minor third on 16px) */

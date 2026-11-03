@@ -6,8 +6,11 @@ body {
   margin: 0;
   min-height: 100dvh;
   background:
-    radial-gradient(120% 60% at 50% -10%, rgba(40, 110, 200, 0.18), transparent 60%),
-    radial-gradient(80% 40% at 100% 110%, rgba(76, 195, 255, 0.06), transparent 70%),
+    radial-gradient(60% 40% at 15% 12%, rgba(40, 120, 230, 0.28), transparent 70%),
+    radial-gradient(50% 35% at 90% 38%, rgba(70, 60, 200, 0.22), transparent 70%),
+    radial-gradient(70% 45% at 30% 78%, rgba(20, 140, 200, 0.2), transparent 70%),
+    radial-gradient(50% 30% at 85% 95%, rgba(76, 195, 255, 0.14), transparent 70%),
+    repeating-linear-gradient(118deg, rgba(150, 210, 255, 0.025) 0 1px, transparent 1px 14px),
     var(--bg);
   background-attachment: fixed;
   color: var(--text);
@@ -59,10 +62,12 @@ button { cursor: pointer; }
   background:
     repeating-linear-gradient(118deg, rgba(150, 210, 255, 0.035) 0 1px, transparent 1px 11px),
     repeating-linear-gradient(64deg, rgba(150, 210, 255, 0.025) 0 1px, transparent 1px 23px),
-    radial-gradient(120% 80% at 50% 0%, rgba(40, 110, 200, 0.16), transparent 70%),
+    radial-gradient(120% 80% at 50% 0%, rgba(60, 140, 230, 0.14), transparent 70%),
     var(--glass);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+  backdrop-filter: blur(10px) saturate(140%);
 }
-.panel > .panel-body { position: relative; padding: 18px var(--gutter); }
+.panel > .panel-body { position: relative; padding: 24px 20px; }
 .panel.is-accent, .glow { /* kept for API compatibility: holo panels already glow */ }
 .panel.is-danger {
   border-color: rgba(255, 170, 178, 0.9);
@@ -158,20 +163,35 @@ button { cursor: pointer; }
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 44px;
+  min-height: 46px;
   padding: 0 18px;
-  border: 1px solid var(--holo-line);
-  background: rgba(10, 24, 44, 0.75);
+  overflow: hidden;
+  border: 1px solid var(--holo-line-soft);
+  background: rgba(14, 32, 58, 0.45);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
   color: #fff;
   font-family: var(--font-sys);
   letter-spacing: 0.04em;
-  box-shadow: 0 0 8px rgba(76, 195, 255, 0.25);
-  transition: background 0.2s, box-shadow 0.2s, transform 0.12s;
+  box-shadow: 0 0 6px rgba(76, 195, 255, 0.18);
+  transition: transform 0.28s var(--ease-out), box-shadow 0.28s, background 0.28s, border-color 0.28s;
 }
-.btn:hover { background: rgba(30, 70, 120, 0.6); box-shadow: var(--holo-glow); }
-.btn:active { transform: scale(0.97); }
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgba(210, 240, 255, 0.32) 50%, transparent 70%);
+  transform: translateX(-130%);
+  pointer-events: none;
+}
+.btn:active { transform: translateY(0) scale(0.97); transition-duration: 0.08s; }
+@media (hover: hover) {
+  .btn:hover { transform: translateY(-2px); border-color: var(--holo-line); background: rgba(30, 70, 120, 0.5); box-shadow: var(--holo-glow-strong); }
+  .btn:hover::before { transform: translateX(130%); transition: transform 0.7s var(--ease-out); }
+  .btn.is-danger:hover { box-shadow: 0 0 10px rgba(255, 90, 106, 0.75), 0 0 28px rgba(255, 40, 60, 0.4); }
+}
 .btn.is-quiet { background: transparent; border-color: var(--line-strong); color: var(--muted); box-shadow: none; }
-.btn.is-danger { background: rgba(60, 10, 18, 0.7); border-color: rgba(255, 170, 178, 0.9); box-shadow: 0 0 8px rgba(255, 60, 80, 0.4); }
+.btn.is-danger { background: rgba(70, 12, 22, 0.45); border-color: rgba(255, 170, 178, 0.7); box-shadow: 0 0 8px rgba(255, 60, 80, 0.3); }
 
 /* ---------- Checkbox (task / habit) ---------- */
 .check {
@@ -194,7 +214,8 @@ button { cursor: pointer; }
   transition: transform 0.35s var(--ease-out);
   box-shadow: 0 0 10px var(--accent-glow);
 }
-.check:hover { border-color: var(--accent); }
+@media (hover: hover) { .check:hover { transform: scale(1.1); box-shadow: var(--holo-glow-strong); } }
+.check { transition: transform 0.2s var(--ease-out), border-color 0.2s, box-shadow 0.3s; }
 .check[aria-checked='true'] { border-color: var(--accent); box-shadow: 0 0 12px var(--accent-glow); }
 .check[aria-checked='true']::after { transform: scale(1); }
 
@@ -222,11 +243,13 @@ button { cursor: pointer; }
 .row {
   display: flex;
   align-items: center;
-  gap: 12px;
-  min-height: 56px;
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(120, 190, 255, 0.08);
+  gap: 14px;
+  min-height: 60px;
+  padding: 10px 4px;
+  border-bottom: 1px solid rgba(120, 190, 255, 0.07);
+  transition: background 0.25s;
 }
+@media (hover: hover) { .row:hover { background: linear-gradient(90deg, rgba(76, 195, 255, 0.08), transparent 80%); } }
 .row:last-child { border-bottom: 0; }
 .row-title { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .row.is-done .row-title { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--accent); }

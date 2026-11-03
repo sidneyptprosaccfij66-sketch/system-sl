@@ -111,11 +111,11 @@ function App() {
         </header>
 
         <section className="fontpick" aria-label="Шрифты">
+          <span className="fontpick-label">Шрифт</span>
           {(['A', 'B', 'C'] as const).map((f) => (
-            <button key={f} className={`fontpick-opt${fonts === f ? ' is-on' : ''}`} aria-pressed={fonts === f} onClick={() => pickFonts(f)}>
-              <span className="sys">{f}</span><span className="fontpick-name">{fontNames[f]}</span>
-            </button>
+            <button key={f} className={`fontpick-opt sys${fonts === f ? ' is-on' : ''}`} aria-pressed={fonts === f} aria-label={`${f}: ${fontNames[f]}`} onClick={() => pickFonts(f)}>{f}</button>
           ))}
+          <span className="fontpick-name">{fontNames[fonts]}</span>
         </section>
 
         {penalty && (
@@ -133,15 +133,17 @@ function App() {
           <div className="panel status">
             <div className="panel-body">
               <h1 className="holo-title status-title">Status</h1>
+              <p className="status-player">Никита</p>
               <div className="status-top">
-                <div className="lv">
-                  <span className="lv-num glow-text"><Counter value={level} duration={600} /></span>
-                  <span className="sys lv-label">Level</span>
+                <div className="hero">
+                  <span className="hero-num"><Counter value={level} duration={600} /></span>
+                  <span className="sys hero-label">Level</span>
                 </div>
-                <dl className="status-meta">
-                  <div><dt className="sys">Rank:</dt><dd><span className="rank-inline" data-rank={rank}>{rank}</span></dd></div>
-                  <div><dt className="sys">Player:</dt><dd>Никита</dd></div>
-                </dl>
+                <span className="hero-divider" aria-hidden="true" />
+                <div className="hero">
+                  <span className="hero-rank" data-rank={rank} aria-label={`Ранг ${rank}`}>{rank}</span>
+                  <span className="sys hero-label">Rank</span>
+                </div>
               </div>
               <div className="holo-box vitals">
                 <div className="vital is-wide">
