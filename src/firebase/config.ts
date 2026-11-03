@@ -11,6 +11,6 @@ export const firebaseConfig: FirebaseConfig = {
 };
 
 /** OAuth Web client ID for Google Calendar (setup.md, section C). */
-export const GOOGLE_CLIENT_ID = '';
+export const GOOGLE_CLIENT_ID = '934594300791-qec6j7pfipifv2u7e0ldekpn08thf6rc.apps.googleusercontent.com';
 
 export const isConfigured = (): boolean => Boolean(firebaseConfig.apiKey && firebaseConfig.projectId);
