@@ -16,7 +16,12 @@ export async function withApp(query, fn, viewport) {
   }
 }
 
-export const nav = (page, name) => page.getByRole('link', { name, exact: true }).click();
+const KEYS = { 'Статус': 'status', 'Сегодня': 'today', 'Задания': 'tasks', 'Навыки': 'skills', 'Ещё': 'more' };
+/** Clicks a menu item and returns the locator of its section in the feed. */
+export async function nav(page, name) {
+  await page.getByRole('navigation', { name: 'Разделы' }).getByRole('link', { name, exact: true }).click();
+  return page.locator(`[data-section="${KEYS[name]}"]`);
+}
 export async function waitWindow(page, title) {
   await page.locator('[role=status]', { hasText: title }).first().waitFor({ timeout: 4000 });
 }

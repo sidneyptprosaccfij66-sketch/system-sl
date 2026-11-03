@@ -6,33 +6,30 @@ const intPoints = (page) => page.locator('[data-stat="INT"]').getAttribute('data
 
 test('quick add suggests the stat; completing awards points; unchecking reverts', () => withApp('', async ({ page }) => {
   const before = await intPoints(page);
-  await nav(page, 'Сегодня');
-  await page.getByLabel('Новое задание').fill('Лаба по ИСиТ');
-  await page.getByRole('button', { name: 'Характеристика: INT' }).waitFor();
-  await page.getByRole('radio', { name: 'Сложность C' }).click();
-  await page.getByRole('button', { name: 'Добавить' }).click();
-  const box = page.getByRole('checkbox', { name: 'Лаба по ИСиТ', exact: true });
-  await box.click();
+  const today = await nav(page, 'Сегодня');
+  await today.getByLabel('Новое задание').fill('Лаба по ИСиТ');
+  await today.getByRole('button', { name: 'Характеристика: INT' }).waitFor();
+  await today.getByRole('radio', { name: 'Сложность C' }).click();
+  await today.getByRole('button', { name: 'Добавить' }).click();
+  await today.getByRole('checkbox', { name: 'Лаба по ИСиТ', exact: true }).click();
   await waitWindow(page, 'QUEST COMPLETED');
-  await nav(page, 'Статус');
+  await page.waitForFunction((b) => Number(document.querySelector('[data-stat="INT"]').dataset.points) === b + 3, before);
   assert.equal(await intPoints(page), before + 3);
-  await nav(page, 'Сегодня');
-  await page.getByRole('checkbox', { name: 'Лаба по ИСиТ', exact: true }).click();
-  await nav(page, 'Статус');
+  await today.getByRole('checkbox', { name: 'Лаба по ИСиТ', exact: true }).click();
   assert.equal(await intPoints(page), before);
 }));
 
 test('closing every habit completes the daily quest', () => withApp('', async ({ page }) => {
-  await nav(page, 'Сегодня');
-  await page.getByRole('checkbox', { name: '20 страниц книги' }).click();
-  await page.getByRole('checkbox', { name: 'Без сладкого после 18:00' }).click();
+  const today = await nav(page, 'Сегодня');
+  await today.getByRole('checkbox', { name: '20 страниц книги' }).click();
+  await today.getByRole('checkbox', { name: 'Без сладкого после 18:00' }).click();
   await waitWindow(page, 'DAILY QUEST COMPLETED');
 }));
 
 test('no habits → hint to add them', () => withApp('&fresh=1', async ({ page }) => {
   await page.getByRole('button', { name: 'Принять' }).click();
-  await nav(page, 'Сегодня');
-  await page.getByText('Добавь привычки в Настройках').waitFor();
+  const today = await nav(page, 'Сегодня');
+  await today.getByText('Добавь привычки в Настройках').waitFor();
 }));
 
 test('penalty banner shows on Status and Today', () => withApp('&penalty=1', async ({ page }) => {

@@ -35,7 +35,7 @@ export function TodayScreen() {
   };
 
   return (
-    <main className="screen is-today">
+    <section className="screen is-today" data-section="today" id="today" aria-label="Сегодня">
       <header className="screen-head">
         <h1 className="holo-title screen-title">Сегодня</h1>
         <p className="screen-sub">{longDate(today)}{rec?.sick ? ' · больничный' : ''}</p>
@@ -103,6 +103,6 @@ export function TodayScreen() {
         </div>
       )}
       {editing && <TaskEditor target={editing} onClose={() => setEditing(null)} />}
-    </main>
+    </section>
   );
 }

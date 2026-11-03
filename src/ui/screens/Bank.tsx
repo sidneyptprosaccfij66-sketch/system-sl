@@ -27,7 +27,7 @@ export function BankScreen() {
 
   return (
     <main className="screen">
-      <header className="screen-head"><h1 className="holo-title screen-title">Банк</h1></header>
+      <header className="screen-head"><a className="back-link" href="#/more" aria-label="Назад"><span aria-hidden="true">‹</span> Назад</a><h1 className="holo-title screen-title">Банк</h1></header>
       <section className="panel">
         <div className="panel-body">
           <h2 className="holo-title list-title">Повторяющиеся</h2>

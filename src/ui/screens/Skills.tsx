@@ -38,7 +38,7 @@ export function SkillsScreen() {
   const [confirm, setConfirm] = useState<string | null>(null);
   const skills = Object.values(s.skills).sort((a, b) => STATS.indexOf(a.stat) - STATS.indexOf(b.stat) || a.unlockLevel - b.unlockLevel);
   return (
-    <main className="screen">
+    <section className="screen" data-section="skills" id="skills" aria-label="Навыки">
       <header className="screen-head">
         <h1 className="holo-title screen-title">Навыки</h1>
         <p className="screen-sub">Реальные умения. Открываются уровнем характеристики, растут через испытания.</p>
@@ -74,6 +74,6 @@ export function SkillsScreen() {
         </div>
       </section>
       {editing && <SkillEditor skill={editing === 'new' ? undefined : editing} onClose={() => setEditing(null)} />}
-    </main>
+    </section>
   );
 }

@@ -21,7 +21,7 @@ export function StatusScreen() {
   const nextSkills = Object.values(s.skills).filter((k) => isUnlocked(s, k) && k.currentLevel < k.levels.length).slice(0, 2);
 
   return (
-    <main className="screen">
+    <section className="screen" data-section="status" id="status" aria-label="Статус">
       <PenaltyBanner />
       <section className="frame status-frame">
         <span className="frame-side is-left" />
@@ -88,6 +88,6 @@ export function StatusScreen() {
           </div>
         </section>
       )}
-    </main>
+    </section>
   );
 }

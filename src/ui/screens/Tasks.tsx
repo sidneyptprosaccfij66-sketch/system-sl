@@ -56,7 +56,7 @@ export function TasksScreen() {
   const done = all.filter((t) => t.status === 'done').sort((a, b) => (b.completedAt ?? 0) - (a.completedAt ?? 0)).slice(0, 50);
 
   return (
-    <main className="screen">
+    <section className="screen" data-section="tasks" id="tasks" aria-label="Задания">
       <header className="screen-head">
         <h1 className="holo-title screen-title">Задания</h1>
       </header>
@@ -85,6 +85,6 @@ export function TasksScreen() {
         </div>
       </section>
       {editing && <TaskEditor target={editing} onClose={() => setEditing(null)} />}
-    </main>
+    </section>
   );
 }
