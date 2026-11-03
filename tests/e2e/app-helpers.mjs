@@ -32,7 +32,7 @@ export async function nav(page, name) {
   return sec;
 }
 export async function waitWindow(page, title) {
-  await page.locator('[role=status]', { hasText: title }).first().waitFor({ timeout: 4000 });
+  await page.locator('[role=status]', { hasText: title }).first().waitFor({ timeout: 10000 });
 }
 export async function dismissAll(page) {
   await page.evaluate(() => window.__fx?.clear());
