@@ -58,6 +58,8 @@ export interface DayRecord {
   habitLedger: Record<string, string>;
   bonusLedgerId?: string;
   streakLedger: Record<string, string>;
+  /** Streak length per habit as of this day (so streaks survive the loaded-history window). */
+  streaks?: Record<string, number>;
 }
 
 export type LedgerKind = 'task' | 'habit' | 'daily_bonus' | 'streak' | 'skill' | 'penalty_loss' | 'revert';
@@ -129,6 +131,8 @@ export interface CalendarSettings {
   imports: { calendarId: string; name: string; penalize: boolean }[];
   lastSyncAt?: number;
   pendingDeletes?: string[];
+  /** Imported events the owner deleted: never import them again. */
+  dismissed?: string[];
 }
 
 export interface Settings {

@@ -6,7 +6,8 @@ export interface Repo {
   /** Full state, or null when this player has no profile yet. */
   load(): Promise<GameState | null>;
   init(state: GameState): Promise<void>;
-  commit(c: Changes): Promise<void>;
+  /** Persists changes made on top of `before` (this device's view). Totals and day records are merged field by field. */
+  commit(c: Changes, before: GameState): Promise<void>;
   /** Remote changes (other devices). Called with the whole mirrored state. */
   subscribe(cb: (s: GameState) => void): () => void;
   /** Atomically claims the right to evaluate up to `day`; false if another device holds a fresh claim. */

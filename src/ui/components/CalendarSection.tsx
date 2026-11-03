@@ -34,7 +34,7 @@ export function CalendarSection({ demo }: { demo: boolean }) {
         ? <button className="btn" disabled={busy} onClick={() => void withApi(async (api) => { await ensureQuestsCalendar(engine, api); setCalendars(await api.listCalendars()); })}>Подключить Google Calendar</button>
         : <>
             <p className="hint">Задания с датой попадают в календарь «Quests». Синхронизация — при открытии приложения и по кнопке.{cal.lastSyncAt ? ` Последняя: ${dateTime(cal.lastSyncAt)}.` : ''}</p>
-            <button className="btn" disabled={busy} onClick={() => void withApi((api) => runSync(engine, api))}>{busy ? 'Синхронизирую…' : 'Синхронизировать'}</button>
+            <button className="btn" disabled={busy} onClick={() => void withApi(async (api) => { const f = await runSync(engine, api); if (f.length) setError(`Не синхронизировалось (${f.length}): ${f.slice(0, 3).join('; ')}`); })}>{busy ? 'Синхронизирую…' : 'Синхронизировать'}</button>
             {calendars === null
               ? <button className="btn is-quiet" disabled={busy} onClick={() => void withApi(async (api) => setCalendars(await api.listCalendars()))}>Выбрать календари для импорта</button>
               : calendars.filter((c) => c.id !== cal.questsCalendarId).map((c) => {

@@ -17,9 +17,14 @@ const put = (tasks: Task[]): Outcome => { const c = emptyChanges(); c.put.tasks 
 const getTask = (s: GameState, id: string): Task => { const t = s.tasks[id]; if (!t) throw new NotFoundError('Задание'); return t; };
 const activeMainQuests = (s: GameState) => Object.values(s.tasks).filter((t) => t.kind === 'quest' && t.questType === 'main' && t.status === 'open').length;
 
+function checkTimes(t: Pick<Task, 'dueTime' | 'endTime'>): void {
+  if (t.endTime && (!t.dueTime || t.endTime <= t.dueTime)) throw new GameError('BAD_TIME', 'Время окончания должно быть позже начала');
+}
+
 export function createTask(s: GameState, ctx: Ctx, input: TaskInput): Outcome {
   const title = input.title.trim();
   if (!title) throw new GameError('EMPTY_TITLE', 'Напиши, что нужно сделать');
+  checkTimes(input);
   if (input.kind === 'quest' && input.questType === 'main' && activeMainQuests(s) >= 3) throw new MainQuestLimitError();
   const { points, source, penalize, ...rest } = input;
   const task: Task = {
@@ -61,12 +66,16 @@ export function uncompleteTask(s: GameState, ctx: Ctx, id: string): Outcome {
 export function updateTask(s: GameState, ctx: Ctx, id: string, patch: Partial<Omit<Task, 'id' | 'status' | 'ledgerId' | 'createdAt'>>): Outcome {
   const t = getTask(s, id);
   const next: Task = { ...t, ...patch, title: (patch.title ?? t.title).trim() || t.title };
+  const moved = ('dueDay' in patch && patch.dueDay !== t.dueDay) || ('dueTime' in patch && patch.dueTime !== t.dueTime) || ('endTime' in patch && patch.endTime !== t.endTime);
+  if (moved && t.dueDay && !canReschedule(s, ctx.now, t)) throw new RescheduleLockedError();
+  if (moved && next.dueDay && next.dueDay !== t.dueDay && next.dueDay < todayKey(s, ctx.now)) throw new GameError('PAST_DAY', 'Нельзя перенести в прошлое');
+  checkTimes(next);
   if (patch.points !== undefined) next.points = clampPoints(patch.points);
   else if (patch.rank && patch.rank !== t.rank) next.points = RANK_POINTS[patch.rank];
   if (t.status === 'done' && t.ledgerId && (next.points !== t.points || next.stat !== t.stat)) {
     const back = toOutcome(s, revert(s, ctx, t.ledgerId));
     const s1 = applyChanges(s, back.changes);
-    const r = award(s1, ctx, { kind: 'task', stat: next.stat, basePoints: next.points, refId: t.id });
+    const r = award(s1, ctx, { kind: 'task', stat: next.stat, basePoints: next.points, refId: t.id, multiplier: s.ledger[t.ledgerId].multiplier });
     const fwd = toOutcome(s1, r);
     const o = mergeOutcomes(back, fwd);
     o.events = [];
@@ -99,9 +108,12 @@ export function deleteTask(s: GameState, _ctx: Ctx, id: string): Outcome {
   const t = getTask(s, id);
   const c = emptyChanges();
   c.remove.tasks = [id];
+  const cal = s.profile.settings.calendar;
   if (t.calendarEventId && t.source === 'manual') {
-    const cal = s.profile.settings.calendar;
     c.profile = { ...s.profile, settings: { ...s.profile.settings, calendar: { ...cal, pendingDeletes: [...(cal.pendingDeletes ?? []), t.calendarEventId] } } };
+  }
+  if (t.calendarEventId && t.source === 'calendar') {
+    c.profile = { ...s.profile, settings: { ...s.profile.settings, calendar: { ...cal, dismissed: [...(cal.dismissed ?? []), t.calendarEventId] } } };
   }
   return { changes: c, events: [] };
 }

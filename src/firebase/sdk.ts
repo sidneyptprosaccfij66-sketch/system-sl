@@ -15,7 +15,7 @@ export type Query = { readonly __query: unique symbol };
 export type Constraint = { readonly __constraint: unique symbol };
 export interface DocSnap { id: string; exists(): boolean; data(): any }
 export interface QuerySnap { docs: DocSnap[]; empty: boolean }
-export interface Batch { set(ref: DocRef, data: object): Batch; delete(ref: DocRef): Batch; commit(): Promise<void> }
+export interface Batch { set(ref: DocRef, data: object, opts?: { merge: boolean }): Batch; update(ref: DocRef, data: object): Batch; delete(ref: DocRef): Batch; commit(): Promise<void> }
 export interface Txn { get(ref: DocRef): Promise<DocSnap>; set(ref: DocRef, data: object): Txn }
 
 export interface FirestoreFns {
@@ -32,6 +32,10 @@ export interface FirestoreFns {
   orderBy(field: string, dir?: 'asc' | 'desc'): Constraint;
   limit(n: number): Constraint;
   serverTimestamp(): unknown;
+  increment(n: number): unknown;
+  arrayUnion(...v: unknown[]): unknown;
+  arrayRemove(...v: unknown[]): unknown;
+  deleteField(): unknown;
 }
 
 export interface FirebaseApi {

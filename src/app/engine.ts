@@ -1,6 +1,7 @@
 // Runs game actions: applies outcomes optimistically, persists them, and feeds events to the UI.
 import { type Ctx, type GameState, type Outcome, GameError, applyChanges, chain, todayKey } from '../game/state';
-import { dayEnd } from '../game/time';
+import { addDays, dayEnd } from '../game/time';
+import { PENALTY_GRACE_MS } from '../game/evaluate';
 import { newGameState } from '../game/defaults';
 import { evaluatePending } from '../game/evaluate';
 import { generateRecurring } from '../game/recurring';
@@ -38,21 +39,45 @@ export function createEngine(repo: Repo, opts: EngineOpts): Engine {
   const notify = () => subs.forEach((s) => s());
   const ctx = (): Ctx => ({ now: opts.clock(), newId: opts.newId, rng: opts.rng });
   let unsubscribeRepo: (() => void) | null = null;
+  let tickInFlight: Promise<void> | null = null;
+
+  /** True when a past day is not evaluated yet or an active penalty has run out its 48 h. */
+  function needsEvaluation(s: GameState, now: number): boolean {
+    const today = todayKey(s, now);
+    const last = s.profile.lastEvaluatedDay ?? addDays(s.profile.firstDay, -1);
+    if (last < addDays(today, -1)) return true;
+    return Object.values(s.penalties).some((p) => p.status === 'active' && now >= p.activeUntil + PENALTY_GRACE_MS);
+  }
+
+  async function runTick(): Promise<void> {
+    if (!state) return;
+    const c = ctx();
+    const steps: ((s: GameState) => Outcome)[] = [];
+    if (needsEvaluation(state, c.now) && (await repo.claimEvaluation(todayKey(state, c.now), token, c.now))) {
+      const fresh = await repo.load();
+      if (fresh) state = fresh;
+      if (needsEvaluation(state, c.now)) steps.push((s) => evaluatePending(s, c));
+    }
+    steps.push((s) => generateRecurring(s, c), (s) => checkSkillUnlocks(s));
+    const outcome = chain(state!, ...steps);
+    const empty = !outcome.events.length && !outcome.changes.profile && !Object.keys(outcome.changes.put).length && !Object.keys(outcome.changes.remove).length;
+    if (!empty) await apply(outcome);
+  }
 
   async function apply(outcome: Outcome): Promise<boolean> {
     if (!state) return false;
     const before = state;
     state = applyChanges(state, outcome.changes);
     notify();
+    events.push(outcome.events);
     try {
-      await repo.commit(outcome.changes);
+      await repo.commit(outcome.changes, before);
     } catch {
       state = before;
       notify();
       events.push([{ type: 'ERROR', message: SAVE_ERROR }]);
       return false;
     }
-    events.push(outcome.events);
     return true;
   }
 
@@ -96,22 +121,9 @@ export function createEngine(repo: Repo, opts: EngineOpts): Engine {
       return apply(outcome);
     },
 
-    async tick() {
-      if (!state) return;
-      const c = ctx();
-      const today = todayKey(state, c.now);
-      const steps: ((s: GameState) => Outcome)[] = [];
-      if (state.profile.lastEvaluatedDay !== undefined || state.profile.firstDay < today) {
-        if (await repo.claimEvaluation(today, token, c.now)) {
-          const fresh = await repo.load();
-          if (fresh) state = fresh;
-          steps.push((s) => evaluatePending(s, c));
-        }
-      }
-      steps.push((s) => generateRecurring(s, c), (s) => checkSkillUnlocks(s));
-      const outcome = chain(state!, ...steps);
-      const empty = !outcome.events.length && !outcome.changes.profile && !Object.keys(outcome.changes.put).length && !Object.keys(outcome.changes.remove).length;
-      if (!empty) await apply(outcome);
+    tick() {
+      tickInFlight ??= runTick().finally(() => { tickInFlight = null; });
+      return tickInFlight;
     },
 
     autoTick() {

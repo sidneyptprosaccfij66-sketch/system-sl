@@ -76,7 +76,9 @@ export function planImport(s: GameState, ctx: Ctx, calendarId: string, events: C
   let cur = s;
   let acc = emptyOutcome();
   const step = (o: Outcome) => { cur = applyChanges(cur, o.changes); acc = mergeOutcomes(acc, o); };
+  const dismissed = new Set(s.profile.settings.calendar.dismissed ?? []);
   for (const ev of events) {
+    if (dismissed.has(ev.id)) continue;
     const existing = Object.values(cur.tasks).find((t) => t.source === 'calendar' && t.calendarEventId === ev.id);
     if (ev.status === 'cancelled') {
       if (existing && existing.status === 'open') { const c = emptyChanges(); c.remove.tasks = [existing.id]; step({ changes: c, events: [] }); }

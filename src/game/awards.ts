@@ -1,6 +1,6 @@
 // Ledger entries and totals (spec §3.2). The ledger is append-only: corrections are 'revert' entries.
 import type { GameEvent, LedgerEntry, LedgerKind, StatCode, Totals } from './types';
-import { type Ctx, type GameState, type Outcome, emptyChanges, isPenaltyZone, todayKey } from './state';
+import { type Ctx, type GameState, type Outcome, GameError, emptyChanges, isPenaltyZone, todayKey } from './state';
 import { hunterRank, levelFromXp, statLevel } from './levels';
 
 export interface AwardResult { entry: LedgerEntry; totals: Totals; events: GameEvent[] }
@@ -21,8 +21,8 @@ export function progressEvents(before: Totals, after: Totals, stat: StatCode): G
   return ev;
 }
 
-export function award(s: GameState, ctx: Ctx, a: { kind: LedgerKind; stat: StatCode; basePoints: number; refId: string }): AwardResult {
-  const m: 1 | 0.5 = isPenaltyZone(s, ctx.now) ? 0.5 : 1;
+export function award(s: GameState, ctx: Ctx, a: { kind: LedgerKind; stat: StatCode; basePoints: number; refId: string; multiplier?: 1 | 0.5 }): AwardResult {
+  const m: 1 | 0.5 = a.multiplier ?? (isPenaltyZone(s, ctx.now) ? 0.5 : 1);
   const points = m === 1 ? a.basePoints : Math.max(1, Math.floor(a.basePoints * m));
   const xp = m === 1 ? a.basePoints * 10 : Math.max(10, Math.floor(a.basePoints * 10 * m));
   const entry: LedgerEntry = { id: ctx.newId(), at: ctx.now, day: todayKey(s, ctx.now), kind: a.kind, stat: a.stat, points, xp, multiplier: m, refId: a.refId };
@@ -33,7 +33,7 @@ export function award(s: GameState, ctx: Ctx, a: { kind: LedgerKind; stat: StatC
 
 export function revert(s: GameState, ctx: Ctx, entryId: string): AwardResult {
   const orig = s.ledger[entryId];
-  if (!orig) throw new Error(`ledger entry ${entryId} not found`);
+  if (!orig) throw new GameError('LEDGER_MISSING', 'Это выполнено слишком давно — отменить начисление нельзя');
   const entry: LedgerEntry = { id: ctx.newId(), at: ctx.now, day: todayKey(s, ctx.now), kind: 'revert', stat: orig.stat, points: -orig.points, xp: -orig.xp, multiplier: orig.multiplier, refId: orig.refId, revertsId: orig.id };
   return { entry, totals: addToTotals(s.profile.totals, orig.stat, -orig.points, -orig.xp), events: [] };
 }

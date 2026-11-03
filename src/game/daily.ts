@@ -18,8 +18,9 @@ export function streakLength(s: GameState, habitId: string, day: DayKey): number
   for (let d = day; d >= s.profile.firstDay; d = addDays(d, -1)) {
     const rec = s.days[d];
     if (rec?.sick) continue;
-    if (rec?.habitsDone.includes(habitId)) n++;
-    else break;
+    if (!rec?.habitsDone.includes(habitId)) break;
+    if (d !== day && rec.streaks?.[habitId] !== undefined) return n + rec.streaks[habitId];
+    n++;
   }
   return n;
 }
@@ -42,6 +43,7 @@ export function toggleHabit(s: GameState, ctx: Ctx, habitId: string, day: DayKey
     delete rec.habitLedger[habitId];
     delete rec.streakLedger[habitId];
     delete rec.bonusLedgerId;
+    if (rec.streaks) { rec.streaks = { ...rec.streaks }; delete rec.streaks[habitId]; }
     rec.habitsDone = rec.habitsDone.filter((h) => h !== habitId);
   } else {
     const r = award(cur, ctx, { kind: 'habit', stat: habit.stat, basePoints: habit.points, refId: habitId });
@@ -51,6 +53,7 @@ export function toggleHabit(s: GameState, ctx: Ctx, habitId: string, day: DayKey
     cur = applyChanges(cur, { put: { days: [rec] }, remove: {} });
 
     const len = streakLength(cur, habitId, day);
+    rec.streaks = { ...rec.streaks, [habitId]: len };
     if (len > 0 && len % STREAK_EVERY === 0) {
       const sr = award(cur, ctx, { kind: 'streak', stat: habit.stat, basePoints: STREAK_BONUS, refId: `${habitId}:${day}` });
       step(toOutcome(cur, sr));
@@ -58,7 +61,7 @@ export function toggleHabit(s: GameState, ctx: Ctx, habitId: string, day: DayKey
       acc.events.push({ type: 'STREAK', habitTitle: habit.title, days: len, stat: habit.stat, points: sr.entry.points } satisfies GameEvent);
     }
     const all = activeHabits(cur);
-    if (all.length > 0 && all.every((h) => rec.habitsDone.includes(h.id))) {
+    if (!rec.bonusLedgerId && all.length > 0 && all.every((h) => rec.habitsDone.includes(h.id))) {
       const br = award(cur, ctx, { kind: 'daily_bonus', stat: 'DIS', basePoints: DAILY_BONUS, refId: `daily:${day}` });
       step(toOutcome(cur, br));
       rec.bonusLedgerId = br.entry.id;
