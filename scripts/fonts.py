@@ -13,6 +13,7 @@ FONTS = {
     "onest": "ofl/onest/Onest[wght].ttf",
     "manrope": "ofl/manrope/Manrope[wght].ttf",
     "jetbrainsmono": "ofl/jetbrainsmono/JetBrainsMono[wght].ttf",
+    "jost": "ofl/jost/Jost[wght].ttf",
     "chakrapetch-400": "ofl/chakrapetch/ChakraPetch-Regular.ttf",
     "chakrapetch-600": "ofl/chakrapetch/ChakraPetch-SemiBold.ttf",
     "chakrapetch-700": "ofl/chakrapetch/ChakraPetch-Bold.ttf",

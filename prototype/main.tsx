@@ -12,6 +12,7 @@ import { ProgressBar } from '../src/ui/fx/progressBar';
 import { Counter } from '../src/ui/fx/counter';
 import { flyToStat } from '../src/ui/fx/flyToStat';
 import { isSoundEnabled, setSoundEnabled } from '../src/ui/fx/sound';
+import { StatIcon } from '../src/ui/fx/statIcons';
 
 // Local copies of the spec formulas — the prototype only needs to look right.
 const totalXp = (L: number) => 100 * (L - 1) + 25 * (L - 1) * (L - 2);
@@ -96,7 +97,7 @@ function App() {
   };
 
   const pickFonts = (f: 'A' | 'B' | 'C') => { setFonts(f); document.documentElement.dataset.fonts = f; };
-  const fontNames = useMemo(() => ({ A: 'Oxanium · Tektur · Onest', B: 'Chakra Petch · Unbounded · Manrope', C: 'Oxanium · Unbounded · Onest' }), []);
+  const fontNames = useMemo(() => ({ A: 'Jost · Onest (как в аниме)', B: 'Oxanium · Tektur · Onest', C: 'Chakra Petch · Unbounded · Manrope' }), []);
 
   return (
     <>
@@ -118,7 +119,7 @@ function App() {
         </section>
 
         {penalty && (
-          <div className="panel is-danger penalty-banner">
+          <div className="panel is-danger penalty-banner" role="status" aria-label="Penalty zone">
             <div className="panel-body">
               <span className="sys" style={{ color: 'var(--danger)' }}>PENALTY ZONE</span>
               <span className="muted">Сутки без YouTube · всё ×0.5</span>
@@ -126,48 +127,61 @@ function App() {
           </div>
         )}
 
-        <section className="panel is-accent glow status">
-          <div className="panel-body">
-            <div className="status-head">
-              <div>
-                <p className="sys status-label">STATUS</p>
-                <h1 className="h-screen">Никита</h1>
-                <p className="muted status-sub">Охотник ранга {rank}</p>
+        <section className="frame status-frame">
+          <span className="frame-side is-left" />
+          <span className="frame-side is-right" />
+          <div className="panel status">
+            <div className="panel-body">
+              <h1 className="holo-title status-title">Status</h1>
+              <div className="status-top">
+                <div className="lv">
+                  <span className="lv-num glow-text"><Counter value={level} duration={600} /></span>
+                  <span className="sys lv-label">Level</span>
+                </div>
+                <dl className="status-meta">
+                  <div><dt className="sys">Rank:</dt><dd><span className="rank-inline" data-rank={rank}>{rank}</span></dd></div>
+                  <div><dt className="sys">Player:</dt><dd>Никита</dd></div>
+                </dl>
               </div>
-              <div className="hunter-badge" data-rank={rank} aria-label={`Ранг ${rank}`}>{rank}</div>
-            </div>
-            <div className="lv">
-              <span className="sys lv-label">LV</span>
-              <span className="lv-num num"><Counter value={level} duration={600} /></span>
-            </div>
-            <ProgressBar value={into / need} level={level} label="Опыт до следующего уровня" />
-            <p className="xp-row muted"><Counter value={into} /> / <span className="num">{need.toLocaleString('ru-RU')}</span> XP</p>
-            <div className="stats">
-              {STATS.map((s) => {
-                const L = statLv(stats[s]);
-                const prog = (stats[s] - ptsFor(L)) / (ptsFor(L + 1) - ptsFor(L));
-                return (
-                  <div key={s} className="stat">
-                    <div className="stat-top">
-                      <span className="stat-code">{s}</span>
-                      <span className="stat-lv num" data-stat-anchor={s}><Counter value={L} duration={500} /></span>
-                    </div>
-                    <span className="stat-name">{STAT_NAMES[s]}</span>
-                    <ProgressBar value={prog} level={L} thin label={`${STAT_NAMES[s]}: прогресс`} />
+              <div className="holo-box vitals">
+                <div className="vital is-wide">
+                  <span className="sys vital-label">XP</span>
+                  <div className="vital-bar">
+                    <ProgressBar value={into / need} level={level} label="Опыт до следующего уровня" />
+                    <span className="vital-num num"><Counter value={into} />/{need}</span>
                   </div>
-                );
-              })}
+                </div>
+                <div className="vital">
+                  <span className="sys vital-label">Daily</span>
+                  <div className="vital-bar">
+                    <ProgressBar value={habits.length / HABITS.length} label="Ежедневный квест" />
+                    <span className="vital-num num">{habits.length}/{HABITS.length}</span>
+                  </div>
+                </div>
+                <div className={`vital-penalty sys${penalty ? ' is-on' : ''}`}>Penalty: <span className="num">{penalty ? 1 : 0}</span></div>
+              </div>
+              <div className="holo-box stats">
+                {STATS.map((s) => {
+                  const L = statLv(stats[s]);
+                  const prog = (stats[s] - ptsFor(L)) / (ptsFor(L + 1) - ptsFor(L));
+                  return (
+                    <div key={s} className="stat" title={STAT_NAMES[s]}>
+                      <span className="stat-icon"><StatIcon stat={s} /></span>
+                      <span className="sys stat-code">{s}:</span>
+                      <span className="stat-lv glow-text" data-stat-anchor={s}><Counter value={L} duration={500} /></span>
+                      <span className="stat-prog"><ProgressBar value={prog} level={L} thin label={`${STAT_NAMES[s]}: прогресс`} /></span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </section>
 
         <section className="panel">
           <div className="panel-body">
-            <div className="section-head">
-              <h2 className="h-section">Ежедневный квест</h2>
-              <span className="num muted">{habits.length}/{HABITS.length}</span>
-            </div>
-            <ProgressBar value={habits.length / HABITS.length} thin label="Ежедневный квест" />
+            <h2 className="holo-title quest-title"><span className="syswin-mark" aria-hidden="true">!</span>Daily Quest</h2>
+            <p className="quest-sub">Ежедневный квест · выполнено <span className="num">{habits.length}/{HABITS.length}</span></p>
             <div className="list">
               {HABITS.map((h) => {
                 const on = habits.includes(h.id);
@@ -185,7 +199,7 @@ function App() {
 
         <section className="panel">
           <div className="panel-body">
-            <div className="section-head"><h2 className="h-section">Сегодня</h2></div>
+            <h2 className="holo-title list-title">Сегодня</h2>
             <div className="list">
               {tasks.map((t) => (
                 <div key={t.id} className={`row${t.done ? ' is-done' : ''}`} ref={(el) => { rows.current[t.id] = el; }}>
