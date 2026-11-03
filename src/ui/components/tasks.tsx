@@ -116,6 +116,7 @@ export function TaskEditor({ target, onClose }: { target: EditorTarget; onClose:
   const [to, setTo] = useState(t?.endTime ?? '');
   const [victory, setVictory] = useState(t?.victory ?? '');
   const [note, setNote] = useState(t?.note ?? '');
+  const [skillId, setSkillId] = useState(t?.skillId ?? '');
   const [steps, setSteps] = useState<ChecklistItem[]>(t?.checklist ?? []);
   const [newStep, setNewStep] = useState('');
   const shownStat = statTouched ? stat : suggestStat(title, s.learned, stat);
@@ -131,7 +132,7 @@ export function TaskEditor({ target, onClose }: { target: EditorTarget; onClose:
   const save = async () => {
     const fields = {
       title, stat: shownStat, rank, dueDay: dueDay || undefined, dueTime: dueDay && from ? from : undefined, endTime: dueDay && from && to ? to : undefined,
-      note: note.trim() || undefined, ...(isQuest ? { questType, victory: victory.trim() || undefined, checklist: steps } : {}),
+      note: note.trim() || undefined, skillId: skillId || undefined, ...(isQuest ? { questType, victory: victory.trim() || undefined, checklist: steps } : {}),
     };
     const ok = t
       ? await engine.run((st, c) => updateTask(st, c, t.id, { ...fields, points: rank !== t.rank ? RANK_POINTS[rank] : t.points }))
@@ -181,6 +182,12 @@ export function TaskEditor({ target, onClose }: { target: EditorTarget; onClose:
           </div>
         </>
       )}
+      <Field label="Навык (практика)">
+        <select className="select" value={skillId} onChange={(e) => setSkillId(e.target.value)}>
+          <option value="">Без навыка</option>
+          {Object.values(s.skills).map((k) => <option key={k.id} value={k.id}>{k.name}</option>)}
+        </select>
+      </Field>
       <Field label="Заметка"><textarea className="textarea" value={note} onChange={(e) => setNote(e.target.value)} /></Field>
       {t?.dueDay && t.status === 'open' && (
         <div className="field">
