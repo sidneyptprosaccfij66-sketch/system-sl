@@ -1,0 +1,77 @@
+/* THE SYSTEM — design tokens (spec §10). */
+
+@font-face { font-family: 'Oxanium'; src: url('./fonts/oxanium.woff') format('woff'); font-weight: 200 800; font-display: swap; }
+@font-face { font-family: 'Chakra Petch'; src: url('./fonts/chakrapetch-400.woff') format('woff'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Chakra Petch'; src: url('./fonts/chakrapetch-600.woff') format('woff'); font-weight: 600; font-display: swap; }
+@font-face { font-family: 'Chakra Petch'; src: url('./fonts/chakrapetch-700.woff') format('woff'); font-weight: 700; font-display: swap; }
+@font-face { font-family: 'Tektur'; src: url('./fonts/tektur.woff') format('woff'); font-weight: 400 900; font-stretch: 75% 100%; font-display: swap; }
+@font-face { font-family: 'Unbounded'; src: url('./fonts/unbounded.woff') format('woff'); font-weight: 200 900; font-display: swap; }
+@font-face { font-family: 'Onest'; src: url('./fonts/onest.woff') format('woff'); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: 'Manrope'; src: url('./fonts/manrope.woff') format('woff'); font-weight: 200 800; font-display: swap; }
+@font-face { font-family: 'JetBrains Mono'; src: url('./fonts/jetbrainsmono.woff') format('woff'); font-weight: 100 800; font-display: swap; }
+
+:root {
+  /* Palette */
+  --bg: #05070d;            /* abyss */
+  --bg-lift: #08101f;
+  --panel-top: rgba(16, 32, 64, 0.94);
+  --panel-bottom: rgba(8, 15, 31, 0.96);
+  --line: rgba(120, 190, 255, 0.22);
+  --line-strong: rgba(120, 190, 255, 0.55);
+  --accent: #4cc3ff;        /* arc blue */
+  --accent-soft: rgba(76, 195, 255, 0.14);
+  --accent-glow: rgba(76, 195, 255, 0.45);
+  --text: #e6f1ff;          /* ice */
+  --muted: #7a8ba6;         /* mist */
+  --faint: #3d4b63;
+  --danger: #ff3b4e;        /* breach */
+  --danger-soft: rgba(255, 59, 78, 0.14);
+  --danger-glow: rgba(255, 59, 78, 0.5);
+
+  --rank-E: #8b93a1;
+  --rank-D: #3fd48a;
+  --rank-C: #4cc3ff;
+  --rank-B: #a77bff;
+  --rank-A: #ff9b3d;
+  --rank-S: #ffd34d;
+
+  /* Type */
+  --font-sys: 'Oxanium', 'Chakra Petch', system-ui, sans-serif;
+  --font-head: 'Tektur', 'Unbounded', system-ui, sans-serif;
+  --font-body: 'Onest', 'Manrope', system-ui, sans-serif;
+  --font-num: 'JetBrains Mono', ui-monospace, monospace;
+  --head-stretch: 92%;
+
+  /* Scale (1.25 minor third on 16px) */
+  --t-xs: 0.75rem;
+  --t-sm: 0.875rem;
+  --t-md: 1rem;
+  --t-lg: 1.25rem;
+  --t-xl: 1.563rem;
+  --t-2xl: 2.441rem;
+  --t-hero: 4.5rem;
+
+  /* Geometry */
+  --cut: 10px;
+  --chamfer: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 calc(100% - var(--cut)), 0 var(--cut));
+  --gutter: 16px;
+  --radius-chip: 3px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* Font pairings for the prototype choice (spec §10.5). */
+:root[data-fonts='B'] {
+  --font-sys: 'Chakra Petch', system-ui, sans-serif;
+  --font-head: 'Unbounded', system-ui, sans-serif;
+  --font-body: 'Manrope', system-ui, sans-serif;
+  --head-stretch: 100%;
+}
+:root[data-fonts='C'] {
+  --font-sys: 'Oxanium', system-ui, sans-serif;
+  --font-head: 'Unbounded', system-ui, sans-serif;
+  --font-body: 'Onest', system-ui, sans-serif;
+  --head-stretch: 100%;
+}

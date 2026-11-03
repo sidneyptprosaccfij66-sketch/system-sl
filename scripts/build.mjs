@@ -58,9 +58,14 @@ async function buildProto() {
   const css = res.outputFiles.find((f) => f.path.endsWith('.css'))?.text ?? '';
   const html = `<!doctype html><html lang="ru"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>THE SYSTEM — прототип</title><style>${css}</style></head>
+<title>Прототип THE SYSTEM</title><style>${css}</style></head>
 <body><div id="root"></div><script type="module">${js.replaceAll('</script', '<\\/script')}</script></body></html>`;
   await writeFile(path.join(out, 'index.html'), html);
+  // Artifact variant: the host wraps the page in its own skeleton.
+  const fragment = `<title>Прототип THE SYSTEM</title>
+<style>:root{color-scheme:dark}${css}</style>
+<div id="root"></div><script type="module">${js.replaceAll('</script', '<\\/script')}</script>`;
+  await writeFile(path.join(out, 'artifact.html'), fragment);
   console.log(`built dist-proto/index.html (${(html.length / 1024).toFixed(0)} KB)`);
 }
 
