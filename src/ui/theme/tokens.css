@@ -1,14 +1,8 @@
 /* THE SYSTEM — design tokens (spec §10). */
 
 @font-face { font-family: 'Oxanium'; src: url('./fonts/oxanium.woff') format('woff'); font-weight: 200 800; font-display: swap; }
-@font-face { font-family: 'Chakra Petch'; src: url('./fonts/chakrapetch-400.woff') format('woff'); font-weight: 400; font-display: swap; }
-@font-face { font-family: 'Chakra Petch'; src: url('./fonts/chakrapetch-600.woff') format('woff'); font-weight: 600; font-display: swap; }
-@font-face { font-family: 'Chakra Petch'; src: url('./fonts/chakrapetch-700.woff') format('woff'); font-weight: 700; font-display: swap; }
 @font-face { font-family: 'Tektur'; src: url('./fonts/tektur.woff') format('woff'); font-weight: 400 900; font-stretch: 75% 100%; font-display: swap; }
-@font-face { font-family: 'Unbounded'; src: url('./fonts/unbounded.woff') format('woff'); font-weight: 200 900; font-display: swap; }
 @font-face { font-family: 'Onest'; src: url('./fonts/onest.woff') format('woff'); font-weight: 100 900; font-display: swap; }
-@font-face { font-family: 'Manrope'; src: url('./fonts/manrope.woff') format('woff'); font-weight: 200 800; font-display: swap; }
-@font-face { font-family: 'Jost'; src: url('./fonts/jost.woff') format('woff'); font-weight: 100 900; font-display: swap; }
 @font-face { font-family: 'JetBrains Mono'; src: url('./fonts/jetbrainsmono.woff') format('woff'); font-weight: 100 800; font-display: swap; }
 
 :root {
@@ -44,14 +38,14 @@
   --gate-A: #ec5a1c;
   --gate-S: #ff1f3d;
 
-  /* Type (A: geometric, closest to the anime's system UI) */
-  --font-sys: 'Jost', 'Onest', system-ui, sans-serif;
-  --font-head: 'Jost', 'Onest', system-ui, sans-serif;
-  --font-body: 'Onest', 'Manrope', system-ui, sans-serif;
-  --sys-weight: 500;
-  --sys-track: 0.12em;
+  /* Type (owner's choice B). Oxanium has no Cyrillic: Russian falls back to Tektur. */
+  --font-sys: 'Oxanium', 'Tektur', system-ui, sans-serif;
+  --font-head: 'Tektur', system-ui, sans-serif;
+  --font-body: 'Onest', system-ui, sans-serif;
+  --sys-weight: 600;
+  --sys-track: 0.16em;
   --font-num: 'JetBrains Mono', ui-monospace, monospace;
-  --head-stretch: 100%;
+  --head-stretch: 92%;
 
   /* Holographic glass */
   --holo-line: rgba(205, 236, 255, 0.85);
@@ -82,19 +76,3 @@
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
-/* Font pairings for the prototype choice (spec §10.5). */
-:root[data-fonts='B'] {
-  --font-sys: 'Oxanium', system-ui, sans-serif;
-  --font-head: 'Tektur', system-ui, sans-serif;
-  --font-body: 'Onest', system-ui, sans-serif;
-  --sys-weight: 600;
-  --sys-track: 0.16em;
-  --head-stretch: 92%;
-}
-:root[data-fonts='C'] {
-  --font-sys: 'Chakra Petch', system-ui, sans-serif;
-  --font-head: 'Unbounded', system-ui, sans-serif;
-  --font-body: 'Manrope', system-ui, sans-serif;
-  --sys-weight: 600;
-  --sys-track: 0.16em;
-}

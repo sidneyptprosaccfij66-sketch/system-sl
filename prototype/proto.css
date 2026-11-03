@@ -11,9 +11,9 @@
 .brand { font-size: var(--t-sm); color: var(--accent); text-shadow: 0 0 12px var(--accent-glow); }
 .sound { min-height: 36px; font-size: var(--t-sm); }
 
-.fontpick { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.fontpick-label { font-size: var(--t-sm); color: var(--muted); margin-right: 4px; }
-.fontpick-opt {
+
+
+
   min-width: 40px;
   min-height: 34px;
   padding: 0 10px;
@@ -22,8 +22,8 @@
   transition: box-shadow 0.25s, transform 0.25s var(--ease-out), border-color 0.25s;
 }
 @media (hover: hover) { .fontpick-opt:hover { transform: translateY(-1px); box-shadow: var(--holo-glow); } }
-.fontpick-opt.is-on { border-color: var(--holo-line); background: rgba(40, 100, 170, 0.4); box-shadow: var(--holo-glow-strong); }
-.fontpick-name { flex-basis: 100%; font-size: var(--t-xs); color: var(--muted); }
+
+
 
 .status-frame { margin: 4px 0; }
 .status .panel-body { padding: 26px 18px 24px; }

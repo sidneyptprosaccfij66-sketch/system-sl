@@ -1,5 +1,5 @@
 // Design prototype (plan Task 3): status window, daily quest, tasks and every key animation on demo data.
-import { useMemo, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../src/ui/theme/tokens.css';
 import '../src/ui/theme/base.css';
@@ -55,7 +55,6 @@ const describe: FxDescribe = {
 };
 
 function App() {
-  const [fonts, setFonts] = useState<'A' | 'B' | 'C'>('A');
   const [sound, setSound] = useState(isSoundEnabled());
   const [xp, setXp] = useState(totalXp(12) + 320);
   const [stats, setStats] = useState<Record<StatCode, number>>({ STR: 26, VIT: 12, INT: 41, MST: 6, DIS: 20, CHA: 4 });
@@ -104,8 +103,6 @@ function App() {
     gain(stat, 2, next.length === HABITS.length ? [{ type: 'DAILY_QUEST_COMPLETED' }] : []);
   };
 
-  const pickFonts = (f: 'A' | 'B' | 'C') => { setFonts(f); document.documentElement.dataset.fonts = f; };
-  const fontNames = useMemo(() => ({ A: 'Jost · Onest (как в аниме)', B: 'Oxanium · Tektur · Onest', C: 'Chakra Petch · Unbounded · Manrope' }), []);
 
   return (
     <>
@@ -117,14 +114,6 @@ function App() {
             {sound ? 'Звук вкл' : 'Звук выкл'}
           </button>
         </header>
-
-        <section className="fontpick" aria-label="Шрифты">
-          <span className="fontpick-label">Шрифт</span>
-          {(['A', 'B', 'C'] as const).map((f) => (
-            <button key={f} className={`fontpick-opt sys${fonts === f ? ' is-on' : ''}`} aria-pressed={fonts === f} aria-label={`${f}: ${fontNames[f]}`} onClick={() => pickFonts(f)}>{f}</button>
-          ))}
-          <span className="fontpick-name">{fontNames[fonts]}</span>
-        </section>
 
         {penalty && (
           <div className="panel is-danger penalty-banner" role="status" aria-label="Penalty zone">
@@ -270,5 +259,4 @@ function App() {
   );
 }
 
-document.documentElement.dataset.fonts = 'A';
 createRoot(document.getElementById('root')!).render(<App />);

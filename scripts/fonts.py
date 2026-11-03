@@ -9,14 +9,8 @@ UNICODES = "U+0020-007E,U+00A0-00FF,U+0400-045F,U+2116,U+2013,U+2014,U+00AB,U+00
 FONTS = {
     "oxanium": "ofl/oxanium/Oxanium[wght].ttf",
     "tektur": "ofl/tektur/Tektur[wdth,wght].ttf",
-    "unbounded": "ofl/unbounded/Unbounded[wght].ttf",
     "onest": "ofl/onest/Onest[wght].ttf",
-    "manrope": "ofl/manrope/Manrope[wght].ttf",
     "jetbrainsmono": "ofl/jetbrainsmono/JetBrainsMono[wght].ttf",
-    "jost": "ofl/jost/Jost[wght].ttf",
-    "chakrapetch-400": "ofl/chakrapetch/ChakraPetch-Regular.ttf",
-    "chakrapetch-600": "ofl/chakrapetch/ChakraPetch-SemiBold.ttf",
-    "chakrapetch-700": "ofl/chakrapetch/ChakraPetch-Bold.ttf",
 }
 OUT.mkdir(parents=True, exist_ok=True)
 for name, rel in FONTS.items():
