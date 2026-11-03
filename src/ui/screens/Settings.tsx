@@ -7,8 +7,10 @@ import { monthOf } from '../../game/time';
 import { sickDaysUsed } from '../../game/evaluate';
 import type { StatCode } from '../../game/types';
 import { Field, StatPicker, Switch } from '../components/controls';
+import { CalendarSection } from '../components/CalendarSection';
 
 export function SettingsScreen({ onSignOut }: { onSignOut?: () => void }) {
+  const demo = !onSignOut;
   const s = useGame();
   const engine = useEngine();
   const st = s.profile.settings;
@@ -85,8 +87,14 @@ export function SettingsScreen({ onSignOut }: { onSignOut?: () => void }) {
           </Field>
           <p className="hint">Больничных в этом месяце осталось: {Math.max(0, sickLeft)} из {st.sickDaysPerMonth}. Взять — на экране «Сегодня».</p>
           <div className="switch-row"><span>Звук</span><Switch checked={st.sound} label="Звук" onChange={(v) => void setSettings({ sound: v })} /></div>
-          <div className="switch-row"><span>Google Calendar<span className="row-sub">Подключение появится в следующей версии</span></span></div>
           {onSignOut && <button className="btn is-quiet" onClick={onSignOut}>Выйти</button>}
+        </div>
+      </section>
+
+      <section className="panel">
+        <div className="panel-body">
+          <h2 className="holo-title list-title">Google Calendar</h2>
+          <CalendarSection demo={demo} />
         </div>
       </section>
     </main>

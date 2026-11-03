@@ -9,6 +9,10 @@ import { dayKeyOf } from '../../game/time';
 import { Background } from '../fx/Background';
 import { setSoundEnabled } from '../fx/sound';
 import { App } from './App';
+import { GOOGLE_CLIENT_ID } from '../../firebase/config';
+import { getCalendarToken } from '../../calendar/gis';
+import { createCalendarApi } from '../../calendar/api';
+import { runSync } from '../../calendar/runSync';
 
 type Phase = { kind: 'loading' } | { kind: 'offline'; message: string } | { kind: 'signedOut' } | { kind: 'onboarding'; name: string } | { kind: 'ready' };
 
@@ -35,6 +39,9 @@ export function Root() {
     setSoundEnabled(Boolean(e.getState()?.profile.settings.sound));
     e.subscribe(() => setSoundEnabled(Boolean(e.getState()?.profile.settings.sound)));
     if (res === 'ready') e.autoTick();
+    if (res === 'ready' && !demo.demo && GOOGLE_CLIENT_ID && e.getState()?.profile.settings.calendar.connected) {
+      getCalendarToken(GOOGLE_CLIENT_ID, false).then((t) => runSync(e, createCalendarApi(t))).catch(() => { /* needs a tap on "Синхронизировать" */ });
+    }
     setPhase(res === 'new' ? { kind: 'onboarding', name } : { kind: 'ready' });
   };
 

@@ -40,6 +40,8 @@ export interface Task {
   source: 'manual' | 'calendar';
   calendarId?: string;
   calendarEventId?: string;
+  /** Signature of the last exported calendar event (to skip unchanged ones). */
+  calendarSig?: string;
   penalize: boolean;
   createdAt: number;
   completedAt?: number;
