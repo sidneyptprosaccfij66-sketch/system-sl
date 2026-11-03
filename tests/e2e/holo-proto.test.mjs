@@ -15,10 +15,10 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 
     const p = app.page;
     try {
       assert.ok(await p.evaluate(() => document.documentElement.classList.contains('holo2')));
-      const frame = await p.evaluate(() => getComputedStyle(document.body, '::before').backgroundImage);
-      assert.match(frame, /svg/, 'HUD frame is drawn');
-      const edge = await p.evaluate(() => getComputedStyle(document.querySelector('.panel'), '::after').borderImageSource);
-      assert.match(edge, /svg/, 'panels get the layered holographic border');
+      const frame = await p.evaluate(() => getComputedStyle(document.body, '::before').content);
+      assert.equal(frame, 'none', 'no HUD frame along the screen edges');
+      const edge = await p.evaluate(() => getComputedStyle(document.querySelector('.panel'), '::after').backgroundImage);
+      assert.match(edge, /svg/, 'windows get the HUD frame');
       await p.getByRole('navigation', { name: 'Разделы' }).getByRole('link', { name: 'Задания', exact: true }).click();
       await p.locator('[data-section="tasks"]').getByRole('tab', { name: 'Все' }).waitFor();
       await p.waitForTimeout(1200);
