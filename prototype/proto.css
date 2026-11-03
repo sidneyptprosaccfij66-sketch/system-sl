@@ -80,13 +80,14 @@
 .section-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
 .list { margin-top: 6px; }
 
+.proto > * { min-width: 0; }
 .rank-showcase { display: grid; grid-template-columns: repeat(3, 1fr); gap: 34px 12px; justify-items: center; padding: 26px 0 10px; }
 .gate-option { display: grid; gap: 14px; width: 100%; margin-top: 14px; padding: 16px 10px; border: 1px solid var(--holo-line-soft); background: rgba(10, 24, 44, 0.3); text-align: left; transition: box-shadow 0.25s, border-color 0.25s; }
 .gate-option.is-on { border-color: var(--holo-line); box-shadow: var(--holo-glow-strong); }
 @media (hover: hover) { .gate-option:hover { border-color: var(--holo-line); } }
 .gate-option-name { font-family: var(--font-sys); color: #fff; }
 .gate-row { display: flex; justify-content: space-between; gap: 4px; }
-.gate-row .gate.is-hero { --size: 3.2rem; --font: 1.5rem; }
+.gate-row .gate.is-hero { --size: min(3.2rem, 11vw); --font: min(1.5rem, 5.2vw); }
 .gate-row.is-small { justify-content: space-around; }
 .rank-chips { display: flex; justify-content: center; gap: 18px; margin-top: 22px; }
 .demo { display: grid; gap: 14px; margin-top: 8px; }
