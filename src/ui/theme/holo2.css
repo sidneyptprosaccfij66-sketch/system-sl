@@ -157,16 +157,6 @@
   background: none;
   padding: 26px 22px;
 }
-/* scanning beam */
-.holo2 .panel > .panel-body::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(180deg, transparent 0 calc(50% - 22px), rgba(110, 200, 255, 0.06) calc(50% - 6px), rgba(200, 240, 255, 0.32) 50%, transparent calc(50% + 1px));
-  transform: translateY(-55%);
-  opacity: 0;
-}
 /* light impulse running along the top edge */
 .holo2 .panel > .panel-body::after {
   content: '';
@@ -418,10 +408,6 @@
   .holo2 .panel::after { animation: edge-breathe 6s ease-in-out infinite; }
   .holo2 .feed > .screen:nth-child(2n) .panel::after { animation-delay: -2s; }
   .holo2 .feed > .screen:nth-child(3n) .panel::after { animation-delay: -4s; }
-  /* 4. scanning beam (periodic, staggered) */
-  .holo2 .panel > .panel-body::before { animation: beam 11s linear infinite; }
-  .holo2 .feed > .screen:nth-child(2n) .panel > .panel-body::before { animation-delay: -4s; }
-  .holo2 .feed > .screen:nth-child(3n) .panel > .panel-body::before { animation-delay: -7.5s; }
   /* impulse along each panel's top edge */
   .holo2 .panel > .panel-body::after { animation: edge-run 7s ease-in-out infinite; }
   .holo2 .feed > .screen:nth-child(2n) .panel > .panel-body::after { animation-delay: -3s; }
@@ -453,9 +439,30 @@
   100% { background-position: 130% 0, -30% 100%, 0 -30%, 100% 130%; }
 }
 @keyframes edge-breathe { 0%, 100% { opacity: 0.82; } 50% { opacity: 1; } }
-@keyframes beam { 0%, 62% { transform: translateY(-55%); opacity: 0; } 64% { opacity: 1; } 96% { opacity: 1; } 100% { transform: translateY(55%); opacity: 0; } }
 @keyframes edge-run { 0% { background-position: -30% 0; } 60%, 100% { background-position: 130% 0; } }
 @keyframes glass-sheen { 0%, 100% { background-position: 100% 0, 0 0, 0 0, 0 0; } 50% { background-position: 0% 0, 0 0, 0 0, 0 0; } }
 @keyframes energy-drift { to { background-position: 720px 720px, 0 48px, 48px 0; } }
 @keyframes volume-drift { from { transform: translate3d(-3%, -2%, 0) scale(1); } to { transform: translate3d(3%, 2%, 0) scale(1.08); } }
 @keyframes title-on { 0% { opacity: 0; } 20% { opacity: 1; } 24% { opacity: 0.35; } 28% { opacity: 1; } 100% { opacity: 1; } }
+
+/* No vertical scan sweeps in the HUD (status window + system popups). */
+.holo2 .status .panel-body::after { transform: none; }
+.holo2 .syswin-scan { display: none; }
+
+/* "!" mark: drawn geometrically so it sits exactly in the circle centre
+   (the text glyph inherited the title's letter-spacing and font metrics). */
+.holo2 .syswin-mark {
+  flex: none;
+  box-sizing: border-box;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  font-size: 0;
+  letter-spacing: 0;
+  color: transparent;
+  border: 1.5px solid #e6f6ff;
+  border-radius: 50%;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='10.7' y='5' width='2.6' height='9.4' rx='1.3' fill='%23f2fbff'/%3E%3Ccircle cx='12' cy='18.1' r='1.5' fill='%23f2fbff'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  box-shadow: 0 0 8px rgba(110, 200, 255, 0.45), inset 0 0 6px rgba(110, 200, 255, 0.25);
+}
+.holo2 .syswin.is-danger .syswin-mark { border-color: var(--danger); }
