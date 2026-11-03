@@ -58,7 +58,7 @@ export function loadFirebase(): Promise<FirebaseApi> {
     const app = appMod.initializeApp(firebaseConfig);
     const auth = authMod.getAuth(app);
     await authMod.setPersistence(auth, authMod.browserLocalPersistence);
-    const db = fsMod.getFirestore(app);
+    const db = fsMod.initializeFirestore(app, { ignoreUndefinedProperties: true });
     const toUser = (u: any): User | null => (u ? { uid: u.uid, displayName: u.displayName, email: u.email } : null);
     return {
       db,
