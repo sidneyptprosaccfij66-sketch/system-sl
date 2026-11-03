@@ -4,7 +4,7 @@ import { animate, prefersReducedMotion } from './motion';
 
 export async function flyToStat(fromEl: Element | null, stat: StatCode, label: string): Promise<void> {
   if (!fromEl) return;
-  const target = document.querySelector(`[data-stat-anchor="${stat}"]`);
+  const target = document.querySelector(`[data-stat-anchor="${stat}"]`) ?? document.querySelector('[data-fly-target]');
   const a = fromEl.getBoundingClientRect();
   const sx = a.left + a.width / 2, sy = a.top + a.height / 2;
   const el = document.createElement('div');

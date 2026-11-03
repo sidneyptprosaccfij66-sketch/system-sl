@@ -1,5 +1,6 @@
 // Task, quest, checklist and habit actions. Every action returns an Outcome.
-import type { ChecklistItem, DayKey, Habit, Rank, StatCode, Task } from './types';
+import type { ChecklistItem, DayKey, Habit, Rank, Settings, StatCode, Task } from './types';
+import { learn } from './classifier';
 import { type Ctx, type GameState, type Outcome, GameError, applyChanges, emptyChanges, mergeOutcomes, todayKey } from './state';
 import { award, revert, toOutcome } from './awards';
 import { RANK_POINTS, clampPoints } from './ranks';
@@ -137,5 +138,23 @@ export function updateHabit(s: GameState, _ctx: Ctx, id: string, patch: Partial<
 export function deleteHabit(s: GameState, _ctx: Ctx, id: string): Outcome {
   if (!s.habits[id]) throw new NotFoundError('Привычка');
   const c = emptyChanges(); c.remove.habits = [id];
+  return { changes: c, events: [] };
+}
+
+/* ---------- Profile & settings ---------- */
+
+export function updateProfile(s: GameState, _ctx: Ctx, patch: { name?: string; settings?: Partial<Settings> }): Outcome {
+  const name = patch.name !== undefined ? patch.name.trim() || s.profile.name : s.profile.name;
+  const settings = { ...s.profile.settings, ...patch.settings };
+  if (settings.dayEndHour < 0 || settings.dayEndHour > 23) throw new GameError('BAD_HOUR', 'Конец дня — от 0 до 23 часов');
+  const c = emptyChanges();
+  c.profile = { ...s.profile, name, settings };
+  return { changes: c, events: [] };
+}
+
+/** Records that the owner chose `stat` for this title, so the next suggestion matches. */
+export function rememberStat(s: GameState, _ctx: Ctx, title: string, stat: StatCode): Outcome {
+  const c = emptyChanges();
+  c.learned = learn(s.learned, title, stat);
   return { changes: c, events: [] };
 }

@@ -6,6 +6,7 @@ import { createIdea } from '../game/ideas';
 import { createRecurring } from '../game/recurring';
 import { toggleHabit } from '../game/daily';
 import { totalXpForLevel } from '../game/levels';
+import { checkSkillUnlocks } from '../game/skills';
 import { todayKey } from '../game/state';
 import { addDays } from '../game/time';
 import type { GameState as GS } from '../game/state';
@@ -53,6 +54,7 @@ export function createDemoState(now: number, withPenalty = false): GameState {
     run(createIdea(s, ctx, { title, tags: [...tags] }));
   }
   s = { ...s, skills: { ...s.skills, 'sk-pullups': { ...s.skills['sk-pullups'], currentLevel: 2, unlockedNotified: true }, 'sk-handstand': { ...s.skills['sk-handstand'], unlockedNotified: true } } };
+  s = applyChanges(s, checkSkillUnlocks(s).changes);
   if (withPenalty) {
     s = { ...s, penalties: { p1: { id: 'p1', forDay: addDays(today, -1), targetDay: today, issuedAt: now - 3600e3, severity: 'medium', score: 5,
       reasons: [{ refId: 'daily', title: 'Ежедневный квест не закрыт', points: 5 }], restrictions: ['Без YouTube'], activeUntil: now + 6 * 3600e3, status: 'active' } } };

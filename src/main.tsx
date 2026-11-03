@@ -1,2 +1,9 @@
-// Stage 1: the app entry is the sign-in probe until the real shell lands (plan Task 13).
-import './probe';
+import { createRoot } from 'react-dom/client';
+import './ui/theme/tokens.css';
+import './ui/theme/base.css';
+import './ui/theme/rank.css';
+import './ui/theme/gate.css';
+import './ui/theme/screens.css';
+import { Root } from './ui/shell/Root';
+
+createRoot(document.getElementById('root')!).render(<Root />);

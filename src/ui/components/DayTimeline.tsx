@@ -21,15 +21,15 @@ const MIN_BLOCK = 46;
 const toMin = (t: string) => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
 const fmt = (m: number) => `${String(Math.floor(m / 60) % 24).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
 
-function nowMinutes(): number {
-  const parts = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Moscow', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date());
+function nowMinutes(at: number): number {
+  const parts = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Moscow', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date(at));
   const get = (t: string) => Number(parts.find((p) => p.type === t)?.value ?? 0);
   return get('hour') * 60 + get('minute');
 }
 
-export function DayTimeline({ items, onToggle, rowRef }: { items: TimelineItem[]; onToggle: (id: string, el: HTMLElement | null) => void; rowRef?: (id: string, el: HTMLElement | null) => void }) {
-  const [now, setNow] = useState(nowMinutes);
-  useEffect(() => { const t = setInterval(() => setNow(nowMinutes()), 60_000); return () => clearInterval(t); }, []);
+export function DayTimeline({ items, onToggle, onOpen, rowRef, clock = Date.now }: { items: TimelineItem[]; onToggle: (id: string, el: HTMLElement | null) => void; onOpen?: (id: string) => void; rowRef?: (id: string, el: HTMLElement | null) => void; clock?: () => number }) {
+  const [now, setNow] = useState(() => nowMinutes(clock()));
+  useEffect(() => { const t = setInterval(() => setNow(nowMinutes(clock())), 60_000); return () => clearInterval(t); }, [clock]);
   if (!items.length) return null;
 
   const spans = items.map((i) => ({ id: i.id, s: toMin(i.start), e: Math.max(toMin(i.end), toMin(i.start) + 15) }));
@@ -66,7 +66,9 @@ export function DayTimeline({ items, onToggle, rowRef }: { items: TimelineItem[]
             >
               <button className="check" role="checkbox" aria-checked={it.done} aria-label={it.title} onClick={(e) => onToggle(it.id, (e.currentTarget as HTMLElement).parentElement)} />
               <div className="tl-body">
-                <span className="tl-title">{it.title}</span>
+                {onOpen
+                  ? <button className="tl-title row-open" aria-label={`Открыть: ${it.title}`} onClick={() => onOpen(it.id)}>{it.title}</button>
+                  : <span className="tl-title">{it.title}</span>}
                 <span className="tl-meta">
                   <span className="tl-time num">{it.start}–{it.end}</span>
                   {it.fromCalendar && <span className="tl-cal" title="Из Google Calendar" aria-label="Из Google Calendar">

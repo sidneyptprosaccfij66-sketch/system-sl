@@ -276,7 +276,7 @@ button { cursor: pointer; }
   z-index: 60;
   pointer-events: none;
 }
-.syswin { pointer-events: auto; --glass: rgba(5, 11, 22, 0.95); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+.syswin { pointer-events: none; --glass: rgba(5, 11, 22, 0.95); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
 .syswin .panel-body { padding: 14px 18px 18px; text-align: center; }
 .syswin-head { display: flex; align-items: center; justify-content: center; gap: 10px; width: fit-content; margin: 0 auto; padding: 5px 16px; border: 1.5px solid var(--holo-line); box-shadow: var(--holo-glow); }
 .syswin.is-danger .syswin-head { border-color: rgba(255, 170, 178, 0.9); }
