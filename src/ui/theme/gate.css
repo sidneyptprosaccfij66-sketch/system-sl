@@ -30,9 +30,20 @@
   text-shadow: 0 0 6px var(--g);
 }
 .gate[data-rank='E'] .gate-letter { color: #aeb6c2; text-shadow: none; }
-.gate[data-rank='S'] .gate-letter { color: #ffe1e1; text-shadow: 0 0 6px #ff2a43, 0 0 16px #c0001c; animation: gate-glitch 2.8s steps(1) infinite; }
-.gate[data-rank='A'] .gate-letter { animation: gate-flicker 4s steps(1) infinite; }
-.gate.is-pulse { animation: gate-pulse 1.8s ease-in-out infinite; }
+.gate[data-rank='S'] .gate-letter { color: #ffe1e1; text-shadow: 0 0 6px #ff2a43, 0 0 16px #c0001c; animation: gate-glitch 28s steps(1) infinite; }
+.gate[data-rank='A'] .gate-letter { animation: gate-flicker 24s steps(1) infinite; }
+
+/* pulse = opacity of a red halo behind the seal (compositor-only, no per-frame repaint) */
+.gate.is-pulse::before {
+  content: '';
+  position: absolute;
+  inset: -30%;
+  z-index: -1;
+  background: radial-gradient(closest-side, rgba(255, 31, 61, 0.55), rgba(160, 0, 20, 0.25) 55%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  animation: gate-pulse 18s ease-in-out infinite;
+}
 
 /* ---------- 2. Seal: engraved metal square with corner brackets ---------- */
 .gate .gate-shape, .gate .gate-shape2 {
@@ -99,24 +110,15 @@
 .gate[data-rank='C'] .gate-corners { --ct: 1.5px; --co: 0.85; --cg: 3px; }
 .gate[data-rank='B'] .gate-corners { --ct: 1.5px; --cg: 4px; }
 .gate[data-rank='A'] .gate-corners { --ct: 2px; --cg: 5px; }
-.gate[data-rank='S'] .gate-corners { --ct: 2px; --cg: 7px; animation: gate-corner-pulse 1.8s ease-in-out infinite; }
+.gate[data-rank='S'] .gate-corners { --ct: 2px; --cg: 7px; animation: gate-corner-pulse 18s ease-in-out infinite; }
 .gate.is-hero[data-rank='A'] .gate-corners, .gate.is-hero[data-rank='S'] .gate-corners { --ct: 3px; }
-@keyframes gate-corner-pulse { 0%, 100% { inset: calc(var(--size) * -0.1); } 50% { inset: calc(var(--size) * -0.15); } }
+/* transform, not inset: pulsing must not trigger layout every frame */
+@keyframes gate-corner-pulse { 0% { transform: scale(1); } 5% { transform: scale(1.08); } 10% { transform: scale(1); } 10.001% { transform: scale(1); } 15% { transform: scale(1.08); } 20% { transform: scale(1); } 20.001% { transform: scale(1); } 25% { transform: scale(1.08); } 30% { transform: scale(1); } 30.001% { transform: scale(1); } 35% { transform: scale(1.08); } 40% { transform: scale(1); } 40.001% { transform: scale(1); } 45% { transform: scale(1.08); } 50% { transform: scale(1); } 50.001% { transform: scale(1); } 55% { transform: scale(1.08); } 60% { transform: scale(1); } 60.001% { transform: scale(1); } 65% { transform: scale(1.08); } 70% { transform: scale(1); } 70.001% { transform: scale(1); } 75% { transform: scale(1.08); } 80% { transform: scale(1); } 80.001% { transform: scale(1); } 85% { transform: scale(1.08); } 90% { transform: scale(1); } 90.001% { transform: scale(1); } 95% { transform: scale(1.08); } 100% { transform: scale(1); } }
 .gate.is-chip[data-rank='S'] .gate-corners { animation: none; }
 
-@keyframes gate-pulse {
-  0%, 100% { filter: drop-shadow(0 0 4px rgba(255, 31, 61, 0.55)); }
-  50% { filter: drop-shadow(0 0 12px rgba(255, 31, 61, 0.95)) drop-shadow(0 0 22px rgba(160, 0, 20, 0.6)); }
-}
-@keyframes gate-flicker { 0%, 100% { opacity: 1; } 42% { opacity: 0.55; } 44% { opacity: 1; } 71% { opacity: 0.7; } 72% { opacity: 1; } }
-@keyframes gate-glitch {
-  0%, 100% { transform: translate(0); opacity: 1; }
-  30% { transform: translate(-1px, 0); }
-  31% { transform: translate(1px, -1px); opacity: 0.6; }
-  32% { transform: translate(0); opacity: 1; }
-  68% { transform: translate(1px, 1px); }
-  69% { transform: translate(0); }
-}
+@keyframes gate-pulse { 0% { opacity: 0.15; transform: scale(0.9); } 5% { opacity: 1; transform: scale(1.05); } 10% { opacity: 0.15; transform: scale(0.9); } 10.001% { opacity: 0.15; transform: scale(0.9); } 15% { opacity: 1; transform: scale(1.05); } 20% { opacity: 0.15; transform: scale(0.9); } 20.001% { opacity: 0.15; transform: scale(0.9); } 25% { opacity: 1; transform: scale(1.05); } 30% { opacity: 0.15; transform: scale(0.9); } 30.001% { opacity: 0.15; transform: scale(0.9); } 35% { opacity: 1; transform: scale(1.05); } 40% { opacity: 0.15; transform: scale(0.9); } 40.001% { opacity: 0.15; transform: scale(0.9); } 45% { opacity: 1; transform: scale(1.05); } 50% { opacity: 0.15; transform: scale(0.9); } 50.001% { opacity: 0.15; transform: scale(0.9); } 55% { opacity: 1; transform: scale(1.05); } 60% { opacity: 0.15; transform: scale(0.9); } 60.001% { opacity: 0.15; transform: scale(0.9); } 65% { opacity: 1; transform: scale(1.05); } 70% { opacity: 0.15; transform: scale(0.9); } 70.001% { opacity: 0.15; transform: scale(0.9); } 75% { opacity: 1; transform: scale(1.05); } 80% { opacity: 0.15; transform: scale(0.9); } 80.001% { opacity: 0.15; transform: scale(0.9); } 85% { opacity: 1; transform: scale(1.05); } 90% { opacity: 0.15; transform: scale(0.9); } 90.001% { opacity: 0.15; transform: scale(0.9); } 95% { opacity: 1; transform: scale(1.05); } 100% { opacity: 0.15; transform: scale(0.9); } }
+@keyframes gate-flicker { 0% { opacity: 1; } 7% { opacity: 0.55; } 7.333% { opacity: 1; } 11.833% { opacity: 0.7; } 12% { opacity: 1; } 16.667% { opacity: 1; } 16.668% { opacity: 1; } 23.667% { opacity: 0.55; } 24% { opacity: 1; } 28.5% { opacity: 0.7; } 28.667% { opacity: 1; } 33.333% { opacity: 1; } 33.334% { opacity: 1; } 40.333% { opacity: 0.55; } 40.667% { opacity: 1; } 45.167% { opacity: 0.7; } 45.333% { opacity: 1; } 50% { opacity: 1; } 50.001% { opacity: 1; } 57% { opacity: 0.55; } 57.333% { opacity: 1; } 61.833% { opacity: 0.7; } 62% { opacity: 1; } 66.667% { opacity: 1; } 66.668% { opacity: 1; } 73.667% { opacity: 0.55; } 74% { opacity: 1; } 78.5% { opacity: 0.7; } 78.667% { opacity: 1; } 83.333% { opacity: 1; } 83.334% { opacity: 1; } 90.333% { opacity: 0.55; } 90.667% { opacity: 1; } 95.167% { opacity: 0.7; } 95.333% { opacity: 1; } 100% { opacity: 1; } }
+@keyframes gate-glitch { 0% { transform: translate(0); opacity: 1; } 3% { transform: translate(-1px, 0); } 3.1% { transform: translate(1px, -1px); opacity: 0.6; } 3.2% { transform: translate(0); opacity: 1; } 6.8% { transform: translate(1px, 1px); } 6.9% { transform: translate(0); } 10% { transform: translate(0); opacity: 1; } 10.001% { transform: translate(0); opacity: 1; } 13% { transform: translate(-1px, 0); } 13.1% { transform: translate(1px, -1px); opacity: 0.6; } 13.2% { transform: translate(0); opacity: 1; } 16.8% { transform: translate(1px, 1px); } 16.9% { transform: translate(0); } 20% { transform: translate(0); opacity: 1; } 20.001% { transform: translate(0); opacity: 1; } 23% { transform: translate(-1px, 0); } 23.1% { transform: translate(1px, -1px); opacity: 0.6; } 23.2% { transform: translate(0); opacity: 1; } 26.8% { transform: translate(1px, 1px); } 26.9% { transform: translate(0); } 30% { transform: translate(0); opacity: 1; } 30.001% { transform: translate(0); opacity: 1; } 33% { transform: translate(-1px, 0); } 33.1% { transform: translate(1px, -1px); opacity: 0.6; } 33.2% { transform: translate(0); opacity: 1; } 36.8% { transform: translate(1px, 1px); } 36.9% { transform: translate(0); } 40% { transform: translate(0); opacity: 1; } 40.001% { transform: translate(0); opacity: 1; } 43% { transform: translate(-1px, 0); } 43.1% { transform: translate(1px, -1px); opacity: 0.6; } 43.2% { transform: translate(0); opacity: 1; } 46.8% { transform: translate(1px, 1px); } 46.9% { transform: translate(0); } 50% { transform: translate(0); opacity: 1; } 50.001% { transform: translate(0); opacity: 1; } 53% { transform: translate(-1px, 0); } 53.1% { transform: translate(1px, -1px); opacity: 0.6; } 53.2% { transform: translate(0); opacity: 1; } 56.8% { transform: translate(1px, 1px); } 56.9% { transform: translate(0); } 60% { transform: translate(0); opacity: 1; } 60.001% { transform: translate(0); opacity: 1; } 63% { transform: translate(-1px, 0); } 63.1% { transform: translate(1px, -1px); opacity: 0.6; } 63.2% { transform: translate(0); opacity: 1; } 66.8% { transform: translate(1px, 1px); } 66.9% { transform: translate(0); } 70% { transform: translate(0); opacity: 1; } 70.001% { transform: translate(0); opacity: 1; } 73% { transform: translate(-1px, 0); } 73.1% { transform: translate(1px, -1px); opacity: 0.6; } 73.2% { transform: translate(0); opacity: 1; } 76.8% { transform: translate(1px, 1px); } 76.9% { transform: translate(0); } 80% { transform: translate(0); opacity: 1; } 80.001% { transform: translate(0); opacity: 1; } 83% { transform: translate(-1px, 0); } 83.1% { transform: translate(1px, -1px); opacity: 0.6; } 83.2% { transform: translate(0); opacity: 1; } 86.8% { transform: translate(1px, 1px); } 86.9% { transform: translate(0); } 90% { transform: translate(0); opacity: 1; } 90.001% { transform: translate(0); opacity: 1; } 93% { transform: translate(-1px, 0); } 93.1% { transform: translate(1px, -1px); opacity: 0.6; } 93.2% { transform: translate(0); opacity: 1; } 96.8% { transform: translate(1px, 1px); } 96.9% { transform: translate(0); } 100% { transform: translate(0); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) {
-  .gate, .gate-letter { animation: none !important; }
+  .gate, .gate-letter, .gate::before, .gate-corners { animation: none !important; }
 }

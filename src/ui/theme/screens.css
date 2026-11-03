@@ -89,6 +89,10 @@
 
 /* ---------- Status ---------- */
 .status-frame { margin: 4px 0; }
+.frame-glint { position: absolute; left: 4%; right: 4%; height: 5px; border-radius: 3px; overflow: hidden; pointer-events: none; }
+.frame-glint.is-top { top: 0; }
+.frame-glint.is-bottom { bottom: 0; }
+.frame-glint::before { content: ''; position: absolute; top: 0; bottom: 0; left: 0; width: 40%; background: linear-gradient(90deg, transparent 0 42%, rgba(255, 255, 255, 0.95) 50%, transparent 58% 100%); transform: translateX(-90%); }
 .status .panel-body { padding: 26px 18px 24px; }
 .status-title { font-size: var(--t-lg); padding: 5px 34px; }
 .status-player { text-align: center; margin: 10px 0 0; color: #cfe3f7; }
@@ -279,15 +283,11 @@
 /* ---------- Status: boot intro + light ambient life ---------- */
 @media (prefers-reduced-motion: no-preference) {
   .status-frame { animation: boot-frame 0.9s var(--ease-out) both; }
-  .status-frame::before, .status-frame::after {
-    background:
-      linear-gradient(90deg, transparent 0 42%, rgba(255, 255, 255, 0.95) 50%, transparent 58% 100%) -60% 0 / 40% 100% no-repeat,
-      linear-gradient(90deg, transparent, #6cc8ff 8%, #e9f8ff 50%, #6cc8ff 92%, transparent);
-    animation: bar-sweep 6.5s ease-in-out 1.2s infinite;
-  }
-  .status-frame::after { animation-delay: 4.4s; animation-direction: reverse; }
-  .status-frame .frame-side { animation: side-flicker 5.5s ease-in-out infinite; }
-  .status-frame .frame-side.is-right { animation-delay: 2.7s; }
+  /* glint sweeping along the bars: a small layer moved by transform (no repaint) */
+  .status-frame .frame-glint::before { animation: bar-sweep 26s ease-in-out infinite; }
+  .status-frame .frame-glint.is-bottom::before { animation-name: bar-sweep-back; }
+  .status-frame .frame-side { animation: side-flicker 22s ease-in-out infinite; }
+  .status-frame .frame-side.is-right { animation-name: side-flicker-b; }
   .status .panel-body { overflow: hidden; }
   .status .panel-body::after {
     content: '';
@@ -311,8 +311,10 @@
   35% { transform: scaleY(0.04); opacity: 1; }
   100% { transform: scaleY(1); opacity: 1; }
 }
-@keyframes bar-sweep { 0% { background-position: -60% 0, 0 0; } 55%, 100% { background-position: 160% 0, 0 0; } }
-@keyframes side-flicker { 0%, 100% { opacity: 1; } 46% { opacity: 0.55; } 48% { opacity: 1; } 52% { opacity: 0.7; } 54% { opacity: 1; } }
+@keyframes bar-sweep { 0% { transform: translateX(-90%); } 13.75% { transform: translateX(240%); } 25% { transform: translateX(240%); } 25.001% { transform: translateX(-90%); } 38.75% { transform: translateX(240%); } 50% { transform: translateX(240%); } 50.001% { transform: translateX(-90%); } 63.75% { transform: translateX(240%); } 75% { transform: translateX(240%); } 75.001% { transform: translateX(-90%); } 88.75% { transform: translateX(240%); } 100% { transform: translateX(240%); } }
+@keyframes bar-sweep-back { 0% { transform: translateX(240%); } 12.5% { transform: translateX(240%); } 25% { transform: translateX(-90%); } 25.001% { transform: translateX(240%); } 37.5% { transform: translateX(240%); } 50% { transform: translateX(-90%); } 50.001% { transform: translateX(240%); } 62.5% { transform: translateX(240%); } 75% { transform: translateX(-90%); } 75.001% { transform: translateX(240%); } 87.5% { transform: translateX(240%); } 100% { transform: translateX(-90%); } }
+@keyframes side-flicker { 0% { opacity: 1; } 11.5% { opacity: 1; } 11.75% { opacity: 0.55; } 12% { opacity: 1; } 13% { opacity: 0.7; } 13.5% { opacity: 1; } 25% { opacity: 1; } 25.001% { opacity: 1; } 36.5% { opacity: 1; } 36.75% { opacity: 0.55; } 37% { opacity: 1; } 38% { opacity: 0.7; } 38.5% { opacity: 1; } 50% { opacity: 1; } 50.001% { opacity: 1; } 61.5% { opacity: 1; } 61.75% { opacity: 0.55; } 62% { opacity: 1; } 63% { opacity: 0.7; } 63.5% { opacity: 1; } 75% { opacity: 1; } 75.001% { opacity: 1; } 86.5% { opacity: 1; } 86.75% { opacity: 0.55; } 87% { opacity: 1; } 88% { opacity: 0.7; } 88.5% { opacity: 1; } 100% { opacity: 1; } }
+@keyframes side-flicker-b { 0% { opacity: 1; } 22.5% { opacity: 1; } 22.75% { opacity: 0.55; } 23% { opacity: 1; } 23.75% { opacity: 0.7; } 24.25% { opacity: 1; } 25% { opacity: 1; } 25.001% { opacity: 1; } 47.5% { opacity: 1; } 47.75% { opacity: 0.55; } 48% { opacity: 1; } 48.75% { opacity: 0.7; } 49.25% { opacity: 1; } 50% { opacity: 1; } 50.001% { opacity: 1; } 72.5% { opacity: 1; } 72.75% { opacity: 0.55; } 73% { opacity: 1; } 73.75% { opacity: 0.7; } 74.25% { opacity: 1; } 75% { opacity: 1; } 75.001% { opacity: 1; } 97.5% { opacity: 1; } 97.75% { opacity: 0.55; } 98% { opacity: 1; } 98.75% { opacity: 0.7; } 99.25% { opacity: 1; } 100% { opacity: 1; } }
 @keyframes scan { 0% { transform: translateY(-110%); } 45%, 100% { transform: translateY(420%); } }
 @keyframes breathe { 0%, 100% { text-shadow: 0 0 18px rgba(140, 210, 255, 0.8), 0 0 2px #fff; } 50% { text-shadow: 0 0 30px rgba(140, 210, 255, 1), 0 0 60px rgba(76, 195, 255, 0.45), 0 0 2px #fff; } }
 @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }

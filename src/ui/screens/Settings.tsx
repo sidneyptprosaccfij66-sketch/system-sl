@@ -8,6 +8,7 @@ import { sickDaysUsed } from '../../game/evaluate';
 import type { StatCode } from '../../game/types';
 import { Field, StatPicker, Switch } from '../components/controls';
 import { CalendarSection } from '../components/CalendarSection';
+import { isLite, setLite } from '../fx/lite';
 
 export function SettingsScreen({ onSignOut }: { onSignOut?: () => void }) {
   const demo = !onSignOut;
@@ -18,6 +19,7 @@ export function SettingsScreen({ onSignOut }: { onSignOut?: () => void }) {
   const [habitStat, setHabitStat] = useState<StatCode | null>(null);
   const [restriction, setRestriction] = useState('');
   const [name, setName] = useState(s.profile.name);
+  const [lite, setLiteState] = useState(isLite);
   const habits = Object.values(s.habits).sort((a, b) => a.order - b.order);
   const shownStat = habitStat ?? suggestStat(habit, s.learned, 'DIS');
   const sickLeft = st.sickDaysPerMonth - sickDaysUsed(s, monthOf(todayKey(s, engine.now())));
@@ -87,6 +89,8 @@ export function SettingsScreen({ onSignOut }: { onSignOut?: () => void }) {
           </Field>
           <p className="hint">Больничных в этом месяце осталось: {Math.max(0, sickLeft)} из {st.sickDaysPerMonth}. Взять — на экране «Сегодня».</p>
           <div className="switch-row"><span>Звук</span><Switch checked={st.sound} label="Звук" onChange={(v) => void setSettings({ sound: v })} /></div>
+          <div className="switch-row"><span>Облегчённая графика</span><Switch checked={lite} label="Облегчённая графика" onChange={(v) => { setLite(v); setLiteState(v); }} /></div>
+          <p className="hint">Только на этом устройстве: без частиц, фоновых анимаций и размытия стекла. Для слабых телефонов и экономии батареи.</p>
           {onSignOut && <button className="btn is-quiet" onClick={onSignOut}>Выйти</button>}
         </div>
       </section>

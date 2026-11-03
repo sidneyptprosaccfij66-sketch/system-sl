@@ -25,7 +25,38 @@ button { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 ::selection { background: var(--accent-soft); }
 
-.bg-canvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+.dust { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+.dust > i { position: absolute; left: var(--x); top: var(--y); }
+.dust > i > b {
+  display: block;
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  background: rgb(120, 200, 255);
+  opacity: 0.4;
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* rise: start below the screen, travel one screen height up, loop */
+  .dust > i { top: 102%; animation: dust-rise var(--rise) linear var(--delay) infinite; }
+  /* twinkle + sway in one compositor animation */
+  .dust > i > b { animation: dust-tw-a 24s ease-in-out infinite; }
+  .dust > i:nth-child(4n+2) > b { animation-name: dust-tw-b; }
+  .dust > i:nth-child(4n+3) > b { animation-name: dust-tw-c; }
+  .dust > i:nth-child(4n) > b { animation-name: dust-tw-d; }
+}
+.holo-lite .dust { display: none; }
+/* scrolling: freeze ambient CSS animations (see fx/scrollPause.ts) */
+/* Targeted list (not *): toggling the class then restyles only these few elements. */
+html.is-scrolling :is(.dust > i, .dust > i > b, .frame-side, .gate-letter, .gate-corners, .rk, .rk-aura, .rk-spark),
+html.is-scrolling :is(.app, .panel, .gate, .rk)::before,
+html.is-scrolling :is(.app, .panel, .penalty-banner)::after,
+html.is-scrolling .panel > .panel-body::before, html.is-scrolling .panel > .panel-body::after,
+html.is-scrolling .rk-ring::before, html.is-scrolling .frame-glint::before { animation-play-state: paused; }
+@keyframes dust-rise { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(0, calc(-100vh - 6%), 0); } }
+@keyframes dust-tw-a { 0%, 100% { opacity: 0.18; transform: translateX(-6px); } 18% { opacity: 0.62; transform: translateX(6px); } 40% { opacity: 0.3; transform: translateX(3px); } 62% { opacity: 0.62; transform: translateX(6px); } 82% { opacity: 0.18; transform: translateX(-6px); } }
+@keyframes dust-tw-b { 0%, 100% { opacity: 0.62; transform: translateX(6px); } 22% { opacity: 0.18; transform: translateX(-6px); } 45% { opacity: 0.62; transform: translateX(6px); } 70% { opacity: 0.4; transform: translateX(0); } 88% { opacity: 0.62; transform: translateX(6px); } }
+@keyframes dust-tw-c { 0%, 100% { opacity: 0.4; transform: translateX(0); } 15% { opacity: 0.18; transform: translateX(-6px); } 35% { opacity: 0.62; transform: translateX(6px); } 58% { opacity: 0.18; transform: translateX(-6px); } 80% { opacity: 0.62; transform: translateX(6px); } }
+@keyframes dust-tw-d { 0%, 100% { opacity: 0.3; transform: translateX(3px); } 25% { opacity: 0.62; transform: translateX(6px); } 50% { opacity: 0.18; transform: translateX(-6px); } 72% { opacity: 0.4; transform: translateX(0); } 90% { opacity: 0.18; transform: translateX(-6px); } }
 
 /* ---------- Type ---------- */
 .h-screen {

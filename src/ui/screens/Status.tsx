@@ -26,6 +26,8 @@ export function StatusScreen() {
       <section className="frame status-frame">
         <span className="frame-side is-left" />
         <span className="frame-side is-right" />
+        <span className="frame-glint is-top" aria-hidden="true" />
+        <span className="frame-glint is-bottom" aria-hidden="true" />
         <div className="panel status">
           <div className="panel-body">
             <h1 className="holo-title status-title">Status</h1>

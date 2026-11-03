@@ -1,8 +1,11 @@
 /* =====================================================================
-   HOLO 2 — holographic visual layer (prototype only).
-   Everything is scoped under html.holo2, so the live site never sees it.
+   HOLO 2 — holographic visual layer (the site's design; scoped under html.holo2).
    Layers: background atmosphere → glass windows, each wrapped in its own
    HUD frame (corners, side tabs, travelling light) → restyled controls.
+   Performance rules (see tests/e2e/perf.test.mjs):
+   - endless animations move only transform/opacity, with cycles ≥ 18 s
+     (several pulses packed into one cycle); no filter/shadow/background loops;
+   - glass blur only on overlays (sheets, system windows).
    ===================================================================== */
 
 :root.holo2 {
@@ -12,8 +15,8 @@
   --h-line-dim: rgba(150, 214, 255, 0.22);
   --h-accent: #46c8ff;
   --h-accent-2: #2e7bff;
-  --h-glass: rgba(7, 16, 32, 0.46);
-  --h-glass-deep: rgba(3, 8, 18, 0.62);
+  --h-glass: rgba(7, 16, 32, 0.56);
+  --h-glass-deep: rgba(3, 8, 18, 0.7);
   --h-text-2: #9fb6d1;
   --h-cut: 12px;
   --h-cut-sm: 7px;
@@ -47,7 +50,7 @@
 .holo2 .app::after {
   content: '';
   position: fixed;
-  inset: -10%;
+  inset: -60px;
   z-index: -1;
   pointer-events: none;
 }
@@ -65,8 +68,9 @@
   background:
     radial-gradient(28% 22% at 30% 35%, rgba(70, 200, 255, 0.12), transparent 70%),
     radial-gradient(24% 20% at 72% 62%, rgba(46, 123, 255, 0.12), transparent 70%);
-  filter: blur(10px);
 }
+/* moving layers (window runners) must never cause horizontal scroll */
+.holo2 .app { overflow-x: clip; }
 
 /* ---------------- Glass panels with layered chamfered borders ---------------- */
 .holo2 .panel {
@@ -89,18 +93,22 @@
   z-index: -1;
   clip-path: var(--h-chamfer);
   background:
-    linear-gradient(115deg, transparent 35%, rgba(190, 235, 255, 0.07) 45%, rgba(190, 235, 255, 0.02) 52%, transparent 60%) 0 0 / 300% 100%,
+    linear-gradient(115deg, transparent 30%, rgba(190, 235, 255, 0.055) 42%, rgba(190, 235, 255, 0.018) 50%, transparent 58%),
     repeating-linear-gradient(118deg, rgba(160, 220, 255, 0.03) 0 1px, transparent 1px 12px),
     radial-gradient(120% 70% at 50% 0%, rgba(70, 160, 255, 0.16), transparent 65%),
     linear-gradient(180deg, var(--h-glass), var(--h-glass-deep));
+  box-shadow: inset 0 1px 0 rgba(220, 245, 255, 0.12);
+}
+/* real frosted glass only on overlays, where page content is behind it */
+.holo2 .sheet .panel::before, .holo2 .syswin .panel::before {
   -webkit-backdrop-filter: blur(12px) saturate(150%);
   backdrop-filter: blur(12px) saturate(150%);
-  box-shadow: inset 0 1px 0 rgba(220, 245, 255, 0.12);
 }
 /* HUD frame around each window (moved here from the screen edges):
    chamfered double-line corners, stepped side tabs with an accent bar,
-   edge lines, and light impulses travelling along the frame. */
-@property --h-run { syntax: '<percentage>'; inherits: false; initial-value: -30%; }
+   edge lines. The light impulses running along it are separate small layers
+   (.panel-body::before/::after) moved by transform, so the frame itself is
+   painted once and never repainted by an animation. */
 .holo2 .panel::after {
   --f-line-x: var(--h-line-mid);
   --f-line-y: rgba(150, 214, 255, 0.4);
@@ -115,10 +123,6 @@
   z-index: 2;
   pointer-events: none;
   background:
-    radial-gradient(closest-side, var(--f-spark), var(--f-glow) 45%, transparent) var(--h-run) 0 / 120px 3px no-repeat,
-    radial-gradient(closest-side, var(--f-spark), var(--f-glow) 45%, transparent) calc(100% - var(--h-run)) 100% / 120px 3px no-repeat,
-    radial-gradient(closest-side, var(--f-spark), var(--f-glow) 45%, transparent) 0 calc(100% - var(--h-run)) / 3px 90px no-repeat,
-    radial-gradient(closest-side, var(--f-spark), var(--f-glow) 45%, transparent) 100% var(--h-run) / 3px 90px no-repeat,
     var(--hf-tl) left top / 64px 64px no-repeat,
     var(--hf-tr) right top / 64px 64px no-repeat,
     var(--hf-bl) left bottom / 64px 64px no-repeat,
@@ -157,12 +161,26 @@
 }
 .holo2 .panel > .panel-body {
   position: relative;
-  clip-path: var(--h-chamfer);
   background: none;
   padding: 26px 22px;
 }
-/* the light now runs along the window frame itself */
-.holo2 .panel > .panel-body::after { content: none; }
+.holo2 .status .panel-body { overflow: visible; }
+/* light impulses on the frame's top (→) and bottom (←) edges */
+.holo2 .panel > .panel-body::before,
+.holo2 .panel > .panel-body::after {
+  content: '';
+  position: absolute;
+  left: -10px;
+  right: -10px;
+  height: 5px;
+  z-index: 3;
+  pointer-events: none;
+  background: radial-gradient(closest-side, var(--f-spark, #f2fbff), var(--f-glow, rgba(70, 200, 255, 0.85)) 40%, transparent) 0 0 / 130px 5px no-repeat;
+  opacity: 0;
+}
+.holo2 .panel > .panel-body::before { top: -11px; }
+.holo2 .panel > .panel-body::after { top: auto; bottom: -11px; transform: none; }
+.holo2 .panel.is-danger > .panel-body { --f-spark: rgba(255, 235, 238, 0.95); --f-glow: rgba(255, 47, 71, 0.85); }
 @media (hover: hover) {
   .holo2 .panel:hover::after { filter: brightness(1.25) drop-shadow(0 0 5px var(--f-glow)) drop-shadow(0 0 14px var(--f-glow-2)); opacity: 1; }
 }
@@ -239,6 +257,8 @@
   clip-path: var(--h-chamfer-sm);
   background: var(--edge);
   box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
   transition: transform 0.28s var(--ease-out), --edge 0.3s ease;
 }
 .holo2 .btn::after, .holo2 .seg-btn::after, .holo2 .stat-chip::after, .holo2 .tl-block::after {
@@ -357,7 +377,9 @@
   border-top: 0;
   background:
     linear-gradient(90deg, transparent, var(--h-line-mid) 20%, var(--h-ice) 50%, var(--h-line-mid) 80%, transparent) center top / 100% 1px no-repeat,
-    linear-gradient(180deg, rgba(10, 26, 52, 0.75), rgba(3, 8, 18, 0.85));
+    linear-gradient(180deg, rgb(9, 22, 44), rgb(3, 8, 18));
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
   box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.5), 0 -1px 14px rgba(70, 200, 255, 0.25);
 }
 .holo2 .nav-link { position: relative; }
@@ -379,7 +401,7 @@
   .holo2 .nav {
     background:
       linear-gradient(180deg, transparent, var(--h-line-mid) 20%, var(--h-ice) 50%, var(--h-line-mid) 80%, transparent) right center / 1px 100% no-repeat,
-      linear-gradient(90deg, rgba(3, 8, 18, 0.88), rgba(10, 26, 52, 0.75));
+      linear-gradient(90deg, rgb(3, 8, 18), rgb(9, 22, 44));
   }
 }
 
@@ -394,31 +416,43 @@
    Motion (only when the viewer allows it)
    ===================================================================== */
 @media (prefers-reduced-motion: no-preference) {
-  /* 1. hologram materializes */
+  /* 1. hologram materializes (one-off) */
   .holo2 .feed, .holo2 main.screen { transform-origin: 50% 0; animation: holo-in 1.1s cubic-bezier(0.16, 1, 0.3, 1) backwards; }
-  /* 2. window HUD frame: glow breathing + light travelling along the frame */
-  .holo2 .panel::after { animation: edge-breathe 6s ease-in-out infinite, frame-run 9s linear infinite; }
-  .holo2 .feed > .screen:nth-child(2n) .panel::after { animation-delay: -2s, -3s; }
-  .holo2 .feed > .screen:nth-child(3n) .panel::after { animation-delay: -4s, -6s; }
-  /* 6. reflections drifting on glass */
-  .holo2 .panel::before { animation: glass-sheen 14s ease-in-out infinite; }
-  /* 5. background drift */
-  .holo2 .app::before { animation: energy-drift 70s linear infinite; }
-  .holo2 .app::after { animation: volume-drift 26s ease-in-out infinite alternate; }
-  /* titles flicker on like projected text */
   .holo2 .holo-title { animation: title-on 1.4s steps(1, end) both; }
+}
+/* Endless ambient motion: transform/opacity only, long cycles. Off for reduced motion and lite mode. */
+@media (prefers-reduced-motion: no-preference) {
+  /* 2. light travelling along each window frame: 3 runs per 27 s cycle */
+  html.holo2:not(.holo-lite) .panel > .panel-body::before { animation: frame-run-right 27s linear infinite; }
+  html.holo2:not(.holo-lite) .panel > .panel-body::after { animation: frame-run-left 27s linear infinite; }
+  html.holo2:not(.holo-lite) .feed > .screen:nth-child(2n) .panel > .panel-body::before,
+  html.holo2:not(.holo-lite) .feed > .screen:nth-child(2n) .panel > .panel-body::after { animation-delay: -4.5s; }
+  /* 5. background drift */
+  html.holo2:not(.holo-lite) .app::before { animation: energy-drift 40s ease-in-out infinite alternate; }
+  html.holo2:not(.holo-lite) .app::after { animation: volume-drift 26s ease-in-out infinite alternate; }
 }
 @keyframes holo-in {
   0% { opacity: 0; transform: scale(0.985); filter: blur(10px) brightness(1.6); }
   60% { opacity: 1; filter: blur(0) brightness(1.25); }
   100% { opacity: 1; transform: none; filter: none; }
 }
-@keyframes frame-run { 0% { --h-run: -30%; } 50%, 100% { --h-run: 130%; } }
-@keyframes edge-breathe { 0%, 100% { opacity: 0.82; } 50% { opacity: 1; } }
-@keyframes glass-sheen { 0%, 100% { background-position: 100% 0, 0 0, 0 0, 0 0; } 50% { background-position: 0% 0, 0 0, 0 0, 0 0; } }
-@keyframes energy-drift { to { background-position: 720px 720px, 0 48px, 48px 0; } }
+@keyframes frame-run-right { 0% { opacity: 0; transform: translateX(0); } 2% { opacity: 1; } 14.667% { opacity: 1; } 16.667% { opacity: 0; transform: translateX(calc(100% - 130px)); } 33.333% { opacity: 0; transform: translateX(calc(100% - 130px)); } 33.334% { opacity: 0; transform: translateX(0); } 35.333% { opacity: 1; } 48% { opacity: 1; } 50% { opacity: 0; transform: translateX(calc(100% - 130px)); } 66.667% { opacity: 0; transform: translateX(calc(100% - 130px)); } 66.668% { opacity: 0; transform: translateX(0); } 68.667% { opacity: 1; } 81.333% { opacity: 1; } 83.333% { opacity: 0; transform: translateX(calc(100% - 130px)); } 100% { opacity: 0; transform: translateX(calc(100% - 130px)); } }
+@keyframes frame-run-left { 0% { opacity: 0; transform: translateX(calc(100% - 130px)); } 2% { opacity: 1; } 14.667% { opacity: 1; } 16.667% { opacity: 0; transform: translateX(0); } 33.333% { opacity: 0; transform: translateX(0); } 33.334% { opacity: 0; transform: translateX(calc(100% - 130px)); } 35.333% { opacity: 1; } 48% { opacity: 1; } 50% { opacity: 0; transform: translateX(0); } 66.667% { opacity: 0; transform: translateX(0); } 66.668% { opacity: 0; transform: translateX(calc(100% - 130px)); } 68.667% { opacity: 1; } 81.333% { opacity: 1; } 83.333% { opacity: 0; transform: translateX(0); } 100% { opacity: 0; transform: translateX(0); } }
+@keyframes energy-drift { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(-48px, -48px, 0); } }
 @keyframes volume-drift { from { transform: translate3d(-3%, -2%, 0) scale(1); } to { transform: translate3d(3%, 2%, 0) scale(1.08); } }
 @keyframes title-on { 0% { opacity: 0; } 20% { opacity: 1; } 24% { opacity: 0.35; } 28% { opacity: 1; } 100% { opacity: 1; } }
+
+/* Status window: replace repaint-heavy loops (text-shadow / box-shadow) with static glow */
+.holo2 .status .hero-num { text-shadow: 0 0 22px rgba(140, 210, 255, 0.85), 0 0 2px #fff; }
+html.holo2 .status .hero-num, html.holo2 .status .bar-fill { animation: none; }
+html.holo2.holo-lite .status-frame::before, html.holo2.holo-lite .status-frame::after,
+html.holo2.holo-lite .status-frame .frame-side, html.holo2.holo-lite .frame-glint::before { animation: none; }
+
+/* Penalty banner: no filter pulse; its red frame runners carry the motion */
+html.holo2 .penalty-banner { animation: none; }
+
+/* Lite mode: also no glass blur anywhere */
+html.holo2.holo-lite *, html.holo2.holo-lite *::before, html.holo2.holo-lite *::after { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
 
 /* No vertical scan sweeps in the HUD (status window + system popups). */
 .holo2 .syswin-scan { display: none; }
