@@ -1,5 +1,6 @@
 // Runs game actions: applies outcomes optimistically, persists them, and feeds events to the UI.
 import { type Ctx, type GameState, type Outcome, GameError, applyChanges, chain, todayKey } from '../game/state';
+import { dayEnd } from '../game/time';
 import { newGameState } from '../game/defaults';
 import { evaluatePending } from '../game/evaluate';
 import { generateRecurring } from '../game/recurring';
@@ -22,6 +23,8 @@ export interface Engine {
   run(action: Action): Promise<boolean>;
   /** End-of-day evaluation, recurring chores, skill unlocks. Safe to call any time. */
   tick(): Promise<void>;
+  /** Re-runs tick() right after each day boundary and when the app becomes visible. Returns a stop function. */
+  autoTick(): () => void;
   now(): number;
 }
 
@@ -109,6 +112,22 @@ export function createEngine(repo: Repo, opts: EngineOpts): Engine {
       const outcome = chain(state!, ...steps);
       const empty = !outcome.events.length && !outcome.changes.profile && !Object.keys(outcome.changes.put).length && !Object.keys(outcome.changes.remove).length;
       if (!empty) await apply(outcome);
+    },
+
+    autoTick() {
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      let stopped = false;
+      const schedule = () => {
+        if (stopped || !state) return;
+        const now = opts.clock();
+        const { timezone, dayEndHour } = state.profile.settings;
+        const until = dayEnd(todayKey(state, now), timezone, dayEndHour) - now + 1000;
+        timer = setTimeout(() => { void engine.tick().finally(schedule); }, Math.min(Math.max(until, 1000), 3_600_000));
+      };
+      const onVisible = () => { if (typeof document !== 'undefined' && document.visibilityState === 'visible') void engine.tick(); };
+      if (typeof document !== 'undefined') document.addEventListener('visibilitychange', onVisible);
+      schedule();
+      return () => { stopped = true; clearTimeout(timer); if (typeof document !== 'undefined') document.removeEventListener('visibilitychange', onVisible); };
     },
   };
   return engine;

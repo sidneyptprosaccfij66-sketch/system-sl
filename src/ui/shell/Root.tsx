@@ -34,6 +34,7 @@ export function Root() {
     const res = await e.start();
     setSoundEnabled(Boolean(e.getState()?.profile.settings.sound));
     e.subscribe(() => setSoundEnabled(Boolean(e.getState()?.profile.settings.sound)));
+    if (res === 'ready') e.autoTick();
     setPhase(res === 'new' ? { kind: 'onboarding', name } : { kind: 'ready' });
   };
 
@@ -77,7 +78,7 @@ export function Root() {
     <GateScreen>
       <h1 className="holo-title quest-title"><span className="syswin-mark" aria-hidden="true">!</span>Notification</h1>
       <p className="gate-msg">You have acquired the qualifications to be a Player. Will you accept?</p>
-      <button className="btn" onClick={async () => { await engine!.create(phase.name); setPhase({ kind: 'ready' }); }}>Принять</button>
+      <button className="btn" onClick={async () => { await engine!.create(phase.name); engine!.autoTick(); setPhase({ kind: 'ready' }); }}>Принять</button>
     </GateScreen>
   );
   return (
