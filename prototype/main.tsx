@@ -16,7 +16,7 @@ import { flyToStat } from '../src/ui/fx/flyToStat';
 import { isSoundEnabled, setSoundEnabled } from '../src/ui/fx/sound';
 import { StatIcon } from '../src/ui/fx/statIcons';
 import { RankBadge } from '../src/ui/fx/rankBadge';
-import { GateBadge } from '../src/ui/fx/gateBadge';
+import { GateBadge, setGateStyle, type GateStyle } from '../src/ui/fx/gateBadge';
 import { DayTimeline } from '../src/ui/components/DayTimeline';
 
 // Local copies of the spec formulas — the prototype only needs to look right.
@@ -62,6 +62,7 @@ function App() {
   const [tasks, setTasks] = useState(TASKS);
   const [habits, setHabits] = useState<string[]>(['h1', 'h2']);
   const [penalty, setPenalty] = useState(false);
+  const [gateStyle, setGateStyleState] = useState<GateStyle>('rift');
   const rows = useRef<Record<string, HTMLElement | null>>({});
 
   const level = levelOf(xp);
@@ -239,15 +240,18 @@ function App() {
                 <div key={r} className="rank-cell"><RankBadge rank={r} size="hero" /></div>
               ))}
             </div>
-            <p className="tl-section">Сложность заданий — врата подземелий</p>
-            <div className="rank-showcase is-gates">
-              {(['E', 'D', 'C', 'B', 'A', 'S'] as Rank[]).map((r) => (
-                <div key={r} className="rank-cell"><GateBadge rank={r} size="hero" /></div>
-              ))}
-            </div>
-            <div className="rank-chips">
-              {(['E', 'D', 'C', 'B', 'A', 'S'] as Rank[]).map((r) => <GateBadge key={r} rank={r} />)}
-            </div>
+            <p className="tl-section">Сложность заданий — выбери стиль врат</p>
+            {([['rift', '1. Разлом'], ['seal', '2. Печать'], ['hex', '3. Метка угрозы']] as [GateStyle, string][]).map(([v, name]) => (
+              <button key={v} className={`gate-option${gateStyle === v ? ' is-on' : ''}`} aria-pressed={gateStyle === v} onClick={() => { setGateStyle(v); setGateStyleState(v); }}>
+                <span className="gate-option-name">{name}</span>
+                <span className="gate-row">
+                  {(['E', 'D', 'C', 'B', 'A', 'S'] as Rank[]).map((r) => <GateBadge key={r} rank={r} size="hero" variant={v} />)}
+                </span>
+                <span className="gate-row is-small">
+                  {(['E', 'D', 'C', 'B', 'A', 'S'] as Rank[]).map((r) => <GateBadge key={r} rank={r} variant={v} />)}
+                </span>
+              </button>
+            ))}
             <p className="quest-sub">Сложность задания: E = 1 очко, D = 2, C = 3, B = 5, A = 8, S = 13</p>
           </div>
         </section>
