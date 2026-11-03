@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUncheckedIndexedAccess": false,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": false,
+    "isolatedModules": true,
+    "types": ["node"],
+    "typeRoots": ["./vendor/types", "/opt/npm-tools/node_modules/@types"],
+    "paths": {
+      "react": ["./vendor/types/react/index.d.ts"],
+      "react/jsx-runtime": ["./vendor/types/react/jsx-runtime.d.ts"],
+      "react/jsx-dev-runtime": ["./vendor/types/react/jsx-dev-runtime.d.ts"],
+      "react-dom": ["./vendor/types/react-dom/index.d.ts"],
+      "react-dom/client": ["./vendor/types/react-dom/client.d.ts"],
+      "csstype": ["./vendor/types/csstype/index.d.ts"]
+    }
+  },
+  "include": ["src", "prototype", "tests", "vendor/types/global.d.ts"]
+}

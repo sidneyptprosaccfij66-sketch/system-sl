@@ -1,0 +1,12 @@
+{
+  "name": "the-system",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node /opt/npm-tools/node_modules/tsx/dist/cli.mjs --test \"tests/game/**/*.test.ts\" \"tests/app/**/*.test.ts\" \"tests/calendar/**/*.test.ts\"",
+    "e2e": "node --test \"tests/e2e/**/*.test.mjs\"",
+    "typecheck": "node /opt/npm-tools/node_modules/typescript/bin/tsc --noEmit -p .",
+    "build": "node scripts/build.mjs",
+    "proto": "node scripts/build.mjs --proto"
+  }
+}
