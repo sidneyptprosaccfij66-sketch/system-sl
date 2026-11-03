@@ -1,0 +1,179 @@
+/* Rank badges: ornament escalates E → S. */
+@property --rk-angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+
+.rk {
+  --c: var(--rank-E);
+  --size: 26px;
+  --font: 0.85rem;
+  --bw: 1px;
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: var(--size);
+  height: var(--size);
+  border: var(--bw) solid var(--c);
+  color: var(--c);
+  isolation: isolate;
+}
+.rk.is-chip { --size: 26px; --font: 0.85rem; }
+.rk.is-hero { --size: 4.4rem; --font: 3rem; --bw: 1.5px; }
+.rk.is-scene { --size: 7rem; --font: 4.6rem; --bw: 2px; }
+
+.rk-letter {
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-sys);
+  font-weight: 600;
+  font-size: var(--font);
+  line-height: 1;
+}
+
+/* E — plain */
+.rk[data-rank='E'] { --c: var(--rank-E); opacity: 0.9; }
+
+/* D — soft glow */
+.rk[data-rank='D'] {
+  --c: var(--rank-D);
+  background: color-mix(in srgb, var(--c) 8%, transparent);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--c) 45%, transparent);
+}
+.rk[data-rank='D'] .rk-letter { text-shadow: 0 0 8px var(--c); }
+
+/* C — double frame */
+.rk[data-rank='C'] {
+  --c: var(--rank-C);
+  background: color-mix(in srgb, var(--c) 10%, transparent);
+  outline: 1px solid color-mix(in srgb, var(--c) 45%, transparent);
+  outline-offset: 2px;
+  box-shadow: 0 0 10px color-mix(in srgb, var(--c) 55%, transparent), inset 0 0 8px color-mix(in srgb, var(--c) 30%, transparent);
+}
+.rk.is-hero[data-rank='C'], .rk.is-scene[data-rank='C'] { outline-offset: 5px; }
+.rk[data-rank='C'] .rk-letter { text-shadow: 0 0 10px var(--c); }
+
+/* Corner brackets (B and above) */
+.rk-corners {
+  position: absolute;
+  inset: calc(var(--size) * -0.16);
+  pointer-events: none;
+  --l: calc(var(--size) * 0.28);
+  --t: max(1.5px, calc(var(--size) * 0.035));
+  background:
+    linear-gradient(var(--c), var(--c)) top left / var(--l) var(--t),
+    linear-gradient(var(--c), var(--c)) top left / var(--t) var(--l),
+    linear-gradient(var(--c), var(--c)) top right / var(--l) var(--t),
+    linear-gradient(var(--c), var(--c)) top right / var(--t) var(--l),
+    linear-gradient(var(--c), var(--c)) bottom left / var(--l) var(--t),
+    linear-gradient(var(--c), var(--c)) bottom left / var(--t) var(--l),
+    linear-gradient(var(--c), var(--c)) bottom right / var(--l) var(--t),
+    linear-gradient(var(--c), var(--c)) bottom right / var(--t) var(--l);
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 0 4px var(--c));
+}
+.rk.is-chip .rk-corners { inset: -4px; --l: 7px; --t: 1.5px; }
+
+/* B — double frame, corners, breathing glow */
+.rk[data-rank='B'] {
+  --c: var(--rank-B);
+  background: color-mix(in srgb, var(--c) 14%, transparent);
+  outline: 1px solid color-mix(in srgb, var(--c) 50%, transparent);
+  outline-offset: 2px;
+  animation: rk-breathe 2.8s ease-in-out infinite;
+}
+.rk.is-chip[data-rank='B'] .rk-corners { display: none; }
+.rk[data-rank='B'] .rk-letter { text-shadow: 0 0 12px var(--c); }
+@keyframes rk-breathe {
+  0%, 100% { box-shadow: 0 0 8px color-mix(in srgb, var(--c) 45%, transparent), inset 0 0 8px color-mix(in srgb, var(--c) 25%, transparent); }
+  50% { box-shadow: 0 0 18px color-mix(in srgb, var(--c) 80%, transparent), inset 0 0 14px color-mix(in srgb, var(--c) 45%, transparent); }
+}
+
+/* Running light around the border (A and S) */
+.rk-ring {
+  position: absolute;
+  inset: calc(var(--bw) * -1);
+  padding: max(2px, calc(var(--bw) + 1px));
+  background: conic-gradient(from var(--rk-angle), transparent 0deg, var(--c) 40deg, #fff 70deg, var(--c) 100deg, transparent 160deg, transparent 180deg, var(--c) 220deg, #fff 250deg, var(--c) 280deg, transparent 340deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: rk-spin 3.2s linear infinite;
+  filter: drop-shadow(0 0 4px var(--c));
+  pointer-events: none;
+}
+@keyframes rk-spin { to { --rk-angle: 360deg; } }
+
+/* A — running light, corners, gradient letter */
+.rk[data-rank='A'] {
+  --c: var(--rank-A);
+  border-color: color-mix(in srgb, var(--c) 40%, transparent);
+  background: radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--c) 28%, transparent), color-mix(in srgb, var(--c) 8%, transparent) 70%);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--c) 60%, transparent), inset 0 0 12px color-mix(in srgb, var(--c) 35%, transparent);
+}
+.rk[data-rank='A'] .rk-letter {
+  background: linear-gradient(180deg, #fff3d6 10%, #ffb257 55%, #ff7a1a 95%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--c) 90%, transparent));
+}
+.rk.is-chip[data-rank='A'] .rk-corners { display: none; }
+
+/* S — gold: running light, aura rings, sparks, metallic shimmering letter, float */
+.rk[data-rank='S'] {
+  --c: var(--rank-S);
+  border-color: color-mix(in srgb, var(--c) 45%, transparent);
+  background:
+    radial-gradient(circle at 50% 30%, rgba(255, 240, 180, 0.35), transparent 60%),
+    radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--c) 22%, transparent), color-mix(in srgb, var(--c) 6%, transparent) 75%);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--c) 75%, transparent), 0 0 42px color-mix(in srgb, var(--c) 35%, transparent), inset 0 0 16px color-mix(in srgb, var(--c) 40%, transparent);
+  animation: rk-float 3.6s ease-in-out infinite;
+}
+.rk[data-rank='S'] .rk-ring { animation-duration: 2.2s; }
+.rk[data-rank='S'] .rk-letter {
+  background: linear-gradient(110deg, #b8861b 0%, #ffe9a3 22%, #fff9e6 30%, #e8b53a 45%, #fff2b8 62%, #b8861b 80%, #ffe9a3 100%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 10px rgba(255, 211, 77, 0.9));
+  animation: rk-shimmer 3s linear infinite;
+}
+@keyframes rk-shimmer { from { background-position: 100% 0; } to { background-position: -150% 0; } }
+@keyframes rk-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+.rk.is-chip[data-rank='S'] { animation: none; }
+.rk.is-chip[data-rank='S'] .rk-corners { display: none; }
+
+.rk-aura {
+  position: absolute;
+  inset: -2px;
+  border: 1.5px solid var(--c);
+  opacity: 0;
+  z-index: -1;
+  animation: rk-aura 2.6s ease-out infinite;
+  pointer-events: none;
+}
+.rk-aura.is-late { animation-delay: 1.3s; }
+@keyframes rk-aura { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.7); opacity: 0; } }
+
+.rk-spark {
+  position: absolute;
+  width: calc(var(--size) * 0.22);
+  height: calc(var(--size) * 0.22);
+  background: #fffbe8;
+  clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+  filter: drop-shadow(0 0 4px #ffd34d);
+  opacity: 0;
+  z-index: 3;
+  animation: rk-twinkle 2.4s ease-in-out infinite;
+  pointer-events: none;
+}
+.rk.is-chip .rk-spark { width: 8px; height: 8px; }
+.rk-spark.is-1 { top: -14%; right: -14%; }
+.rk-spark.is-2 { bottom: -10%; left: -16%; animation-delay: 0.8s; }
+.rk-spark.is-3 { top: 40%; right: -22%; animation-delay: 1.6s; transform: scale(0.7); }
+@keyframes rk-twinkle { 0%, 100% { opacity: 0; transform: scale(0.4) rotate(0deg); } 45% { opacity: 1; transform: scale(1) rotate(45deg); } 70% { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .rk, .rk-ring, .rk-letter, .rk-aura, .rk-spark { animation: none !important; }
+  .rk-aura, .rk-spark { display: none; }
+}

@@ -186,7 +186,7 @@ button { cursor: pointer; }
 }
 .btn:active { transform: translateY(0) scale(0.97); transition-duration: 0.08s; }
 @media (hover: hover) {
-  .btn:hover { transform: translateY(-2px); border-color: var(--holo-line); background: rgba(30, 70, 120, 0.5); box-shadow: var(--holo-glow-strong); }
+  .btn:hover { transform: translateY(-2px) scale(1.04); border-color: var(--holo-line); background: rgba(30, 70, 120, 0.5); box-shadow: var(--holo-glow-strong); }
   .btn:hover::before { transform: translateX(130%); transition: transform 0.7s var(--ease-out); }
   .btn.is-danger:hover { box-shadow: 0 0 10px rgba(255, 90, 106, 0.75), 0 0 28px rgba(255, 40, 60, 0.4); }
 }
@@ -247,9 +247,20 @@ button { cursor: pointer; }
   min-height: 60px;
   padding: 10px 4px;
   border-bottom: 1px solid rgba(120, 190, 255, 0.07);
-  transition: background 0.25s;
+  transform-origin: center;
+  transition: transform 0.3s var(--ease-out), background 0.3s, box-shadow 0.3s, border-color 0.3s;
 }
-@media (hover: hover) { .row:hover { background: linear-gradient(90deg, rgba(76, 195, 255, 0.08), transparent 80%); } }
+@media (hover: hover) {
+  .row:hover {
+    position: relative;
+    z-index: 1;
+    transform: scale(1.03);
+    border-color: transparent;
+    background: linear-gradient(90deg, rgba(76, 195, 255, 0.14), rgba(76, 195, 255, 0.04) 85%);
+    box-shadow: 0 0 0 1px rgba(205, 236, 255, 0.35), 0 0 16px rgba(76, 195, 255, 0.25);
+  }
+}
+.row:active { transform: scale(0.99); transition-duration: 0.08s; }
 .row:last-child { border-bottom: 0; }
 .row-title { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .row.is-done .row-title { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--accent); }
@@ -364,6 +375,7 @@ button { cursor: pointer; }
   color: var(--accent);
 }
 .scene-num span { display: block; }
+.scene-rank-wrap { display: inline-grid; margin-top: 30px; }
 .scene-sub { margin-top: 10px; color: var(--muted); font-size: var(--t-sm); }
 .scene-rank {
   display: inline-grid;

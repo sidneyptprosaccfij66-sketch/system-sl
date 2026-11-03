@@ -2,6 +2,7 @@
 import { useEffect, useRef } from 'react';
 import type { Rank } from '../../game/types';
 import { animate, wait } from './motion';
+import { RankBadge } from './rankBadge';
 
 export function LevelUpScene({ variant, from, to, onDone }: { variant: 'level' | 'rank'; from: number | Rank; to: number | Rank; onDone: () => void }) {
   const root = useRef<HTMLDivElement>(null);
@@ -47,7 +48,7 @@ export function LevelUpScene({ variant, from, to, onDone }: { variant: 'level' |
           </div>
         ) : (
           <div>
-            <div ref={badge} className="scene-rank" data-rank={String(to)}>{String(to)}</div>
+            <div ref={badge} className="scene-rank-wrap"><RankBadge rank={to as Rank} size="scene" /></div>
             <div className="scene-sub" style={{ color: 'var(--text)' }}>Ранг {from} → {to}</div>
           </div>
         )}

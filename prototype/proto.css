@@ -80,6 +80,8 @@
 .section-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
 .list { margin-top: 6px; }
 
+.rank-showcase { display: grid; grid-template-columns: repeat(3, 1fr); gap: 34px 12px; justify-items: center; padding: 26px 0 10px; }
+.rank-chips { display: flex; justify-content: center; gap: 18px; margin-top: 22px; }
 .demo { display: grid; gap: 14px; margin-top: 8px; }
 .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 

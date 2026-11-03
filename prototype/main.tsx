@@ -3,6 +3,7 @@ import { useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../src/ui/theme/tokens.css';
 import '../src/ui/theme/base.css';
+import '../src/ui/theme/rank.css';
 import './proto.css';
 import { STATS, STAT_NAMES, type GameEvent, type Rank, type StatCode } from '../src/game/types';
 import { createEventQueue } from '../src/ui/fx/eventQueue';
@@ -13,6 +14,7 @@ import { Counter } from '../src/ui/fx/counter';
 import { flyToStat } from '../src/ui/fx/flyToStat';
 import { isSoundEnabled, setSoundEnabled } from '../src/ui/fx/sound';
 import { StatIcon } from '../src/ui/fx/statIcons';
+import { RankBadge } from '../src/ui/fx/rankBadge';
 
 // Local copies of the spec formulas — the prototype only needs to look right.
 const totalXp = (L: number) => 100 * (L - 1) + 25 * (L - 1) * (L - 2);
@@ -141,7 +143,7 @@ function App() {
                 </div>
                 <span className="hero-divider" aria-hidden="true" />
                 <div className="hero">
-                  <span className="hero-rank" data-rank={rank} aria-label={`Ранг ${rank}`}>{rank}</span>
+                  <RankBadge rank={rank} size="hero" />
                   <span className="sys hero-label">Rank</span>
                 </div>
               </div>
@@ -208,10 +210,25 @@ function App() {
                   <button className="check" role="checkbox" aria-checked={t.done} aria-label={t.title} onClick={() => complete(t)} />
                   <span className="row-title">{t.title}</span>
                   <span className="stat-code small">{t.stat}</span>
-                  <span className="rank-chip" data-rank={t.rank}>{t.rank}</span>
+                  <RankBadge rank={t.rank} label={`Ранг задания ${t.rank}`} />
                 </div>
               ))}
             </div>
+          </div>
+        </section>
+
+        <section className="panel">
+          <div className="panel-body">
+            <h2 className="holo-title list-title">Ранги</h2>
+            <div className="rank-showcase">
+              {(['E', 'D', 'C', 'B', 'A', 'S'] as Rank[]).map((r) => (
+                <div key={r} className="rank-cell"><RankBadge rank={r} size="hero" /></div>
+              ))}
+            </div>
+            <div className="rank-chips">
+              {(['E', 'D', 'C', 'B', 'A', 'S'] as Rank[]).map((r) => <RankBadge key={r} rank={r} />)}
+            </div>
+            <p className="quest-sub">Так ранги выглядят у заданий</p>
           </div>
         </section>
 
