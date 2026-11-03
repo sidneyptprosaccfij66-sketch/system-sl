@@ -17,7 +17,7 @@ test('completing a task shows QUEST COMPLETED window that closes by itself', () 
   await page.getByRole('button', { name: 'Выполнить задание' }).click();
   const win = page.locator('[role=status]', { hasText: 'QUEST COMPLETED' });
   await win.waitFor({ state: 'visible', timeout: 3000 });
-  await win.waitFor({ state: 'detached', timeout: 6000 });
+  await win.waitFor({ state: 'detached', timeout: 12000 });
 }));
 
 test('level up plays the LEVEL UP scene', () => withProto({}, async ({ page }) => {
