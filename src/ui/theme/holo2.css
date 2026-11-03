@@ -239,44 +239,61 @@
 .holo2 .hero-num { font-weight: 500; }
 .holo2 .stat-icon { filter: drop-shadow(0 0 5px rgba(120, 210, 255, 0.95)); }
 
-/* ---------------- Buttons ---------------- */
-.holo2 .btn {
-  clip-path: var(--h-chamfer-sm);
+@property --edge { syntax: '<color>'; inherits: true; initial-value: transparent; }
+
+/* ---------------- Chamfered controls: outline layer + fill layer ----------------
+   The element itself paints the outline colour and is clipped to the chamfer;
+   ::after (inset 1px, same chamfer) paints the fill. The 1px ring left between
+   them is a complete contour, diagonals included. Glow lives inside the fill. */
+.holo2 .btn, .holo2 .seg-btn, .holo2 .stat-chip, .holo2 .tl-block {
+  --edge: var(--h-line-mid);
+  --fill: linear-gradient(180deg, rgba(70, 160, 255, 0.16), rgba(20, 60, 120, 0.2)), rgba(6, 16, 32, 0.78);
+  isolation: isolate;
   border: 0;
-  background:
-    linear-gradient(180deg, rgba(70, 160, 255, 0.18), rgba(20, 60, 120, 0.22)),
-    rgba(6, 16, 32, 0.5);
-  box-shadow: inset 0 0 0 1px var(--h-line-mid), inset 0 1px 0 rgba(230, 248, 255, 0.25), inset 0 0 18px rgba(70, 200, 255, 0.10);
-  letter-spacing: 0.06em;
+  clip-path: var(--h-chamfer-sm);
+  background: var(--edge);
+  box-shadow: none;
+  transition: transform 0.28s var(--ease-out), --edge 0.3s ease;
 }
+.holo2 .btn::after, .holo2 .seg-btn::after, .holo2 .stat-chip::after, .holo2 .tl-block::after {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  clip-path: polygon(calc(var(--h-cut-sm) - 0.4px) 0, 100% 0, 100% calc(100% - var(--h-cut-sm) + 0.4px), calc(100% - var(--h-cut-sm) + 0.4px) 100%, 0 100%, 0 calc(var(--h-cut-sm) - 0.4px));
+  background: var(--fill);
+  pointer-events: none;
+}
+/* buttons */
+.holo2 .btn, .holo2 .seg-btn, .holo2 .stat-chip { position: relative; }
+.holo2 .btn { color: #fff; letter-spacing: 0.05em; }
+.holo2 .btn.is-quiet { --edge: var(--h-line-dim); --fill: rgba(6, 16, 32, 0.6); color: #b8cbe2; }
+.holo2 .btn.is-danger { --edge: rgba(255, 170, 178, 0.75); --fill: linear-gradient(180deg, rgba(255, 60, 80, 0.2), rgba(120, 10, 30, 0.32)), rgba(20, 4, 8, 0.8); }
+.holo2 .btn:disabled { opacity: 0.4; transform: none; }
 @media (hover: hover) {
-  .holo2 .btn:hover {
+  .holo2 .btn:not(:disabled):hover {
+    --edge: var(--h-ice);
+    --fill: radial-gradient(120% 140% at 50% 120%, rgba(70, 200, 255, 0.35), transparent 60%), linear-gradient(180deg, rgba(90, 190, 255, 0.3), rgba(30, 90, 170, 0.32)), rgba(6, 16, 32, 0.78);
     transform: translateY(-2px) scale(1.03);
-    background: linear-gradient(180deg, rgba(90, 190, 255, 0.32), rgba(30, 90, 170, 0.32)), rgba(6, 16, 32, 0.5);
-    box-shadow: inset 0 0 0 1px var(--h-line), inset 0 1px 0 rgba(240, 252, 255, 0.45), inset 0 0 24px rgba(70, 200, 255, 0.28);
     text-shadow: 0 0 10px rgba(150, 220, 255, 0.9);
   }
+  .holo2 .btn.is-danger:not(:disabled):hover { --edge: #ffd6db; --fill: radial-gradient(120% 140% at 50% 120%, rgba(255, 60, 80, 0.4), transparent 60%), linear-gradient(180deg, rgba(255, 60, 80, 0.3), rgba(120, 10, 30, 0.4)), rgba(20, 4, 8, 0.8); }
 }
-.holo2 .btn.is-quiet { background: rgba(6, 16, 32, 0.35); box-shadow: inset 0 0 0 1px var(--h-line-dim); color: #b8cbe2; }
-.holo2 .btn.is-danger { background: linear-gradient(180deg, rgba(255, 60, 80, 0.22), rgba(120, 10, 30, 0.3)); box-shadow: inset 0 0 0 1px rgba(255, 170, 178, 0.7), inset 0 0 18px rgba(255, 50, 70, 0.15); }
-.holo2 .btn:disabled { opacity: 0.4; transform: none; }
-
-/* Segmented controls & tabs */
-.holo2 .seg-btn {
-  clip-path: var(--h-chamfer-sm);
-  border: 0;
-  background: rgba(6, 16, 32, 0.45);
-  box-shadow: inset 0 0 0 1px var(--h-line-dim);
-  transition: box-shadow 0.25s, background 0.25s, color 0.25s, transform 0.25s var(--ease-out);
-}
+/* segmented controls & tabs */
+.holo2 .seg-btn { --edge: var(--h-line-dim); --fill: rgba(6, 16, 32, 0.72); color: #cfe0f3; }
 .holo2 .seg-btn[aria-checked='true'], .holo2 .seg-btn[aria-pressed='true'], .holo2 .tabs .seg-btn[aria-selected='true'] {
-  background: linear-gradient(180deg, rgba(90, 190, 255, 0.3), rgba(30, 90, 170, 0.3));
-  box-shadow: inset 0 0 0 1px var(--h-line), inset 0 0 16px rgba(70, 200, 255, 0.3);
+  --edge: var(--h-ice);
+  --fill: radial-gradient(100% 120% at 50% 120%, rgba(70, 200, 255, 0.35), transparent 65%), linear-gradient(180deg, rgba(90, 190, 255, 0.28), rgba(30, 90, 170, 0.3)), rgba(6, 16, 32, 0.78);
   color: #fff;
   text-shadow: 0 0 8px rgba(150, 220, 255, 0.9);
 }
-@media (hover: hover) { .holo2 .seg-btn:hover { box-shadow: inset 0 0 0 1px var(--h-line-mid), inset 0 0 12px rgba(70, 200, 255, 0.18); } }
-.holo2 .stat-chip { clip-path: var(--h-chamfer-sm); border: 0; box-shadow: inset 0 0 0 1px var(--h-line), inset 0 0 14px rgba(70, 200, 255, 0.25); }
+@media (hover: hover) { .holo2 .seg-btn:hover { --edge: var(--h-line); } }
+.holo2 .tabs .seg-btn { padding: 0 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0; }
+@media (min-width: 600px) and (max-width: 899px) {
+  .holo2 .tabs { grid-template-columns: repeat(4, 1fr); }
+  .holo2 .tabs .seg-btn:first-child { grid-column: 1 / -1; }
+}
+.holo2 .stat-chip { --edge: var(--h-line); --fill: radial-gradient(100% 120% at 50% 120%, rgba(70, 200, 255, 0.3), transparent 65%), rgba(10, 30, 60, 0.85); }
 
 /* ---------------- Inputs ---------------- */
 .holo2 .input, .holo2 .select, .holo2 .textarea {
@@ -308,8 +325,7 @@
 }
 .holo2 .check[aria-checked='true'] { box-shadow: inset 0 0 0 1.5px var(--h-ice), inset 0 0 10px rgba(70, 200, 255, 0.6); }
 @media (hover: hover) { .holo2 .check:hover { box-shadow: inset 0 0 0 1.5px var(--h-ice); } }
-.holo2 .switch { clip-path: var(--h-chamfer-sm); border: 0; box-shadow: inset 0 0 0 1px var(--h-line-mid); }
-.holo2 .switch::after { clip-path: var(--h-chamfer-sm); }
+.holo2 .switch { border-color: var(--h-line-mid); box-shadow: inset 0 0 8px rgba(70, 200, 255, 0.12); }
 
 /* Rows */
 .holo2 .row { border-bottom-color: rgba(150, 214, 255, 0.08); }
@@ -324,13 +340,25 @@
 .holo2 .bar { border-color: var(--h-line-mid); background: rgba(70, 200, 255, 0.06); }
 .holo2 .bar-fill { background: linear-gradient(90deg, rgba(46, 123, 255, 0.85), #8fdcff 70%, #f2fbff); }
 
-/* Timeline blocks */
+/* Timeline blocks: chamfered outline + rank bar + full-contour hover glow */
 .holo2 .tl-block {
-  border: 0;
-  clip-path: var(--h-chamfer-sm);
-  box-shadow: inset 3px 0 0 var(--rank-color, var(--h-accent)), inset 0 0 0 1px var(--h-line-dim), inset 0 0 24px rgba(70, 200, 255, 0.06);
+  --edge: var(--h-line-dim);
+  --fill: linear-gradient(90deg, var(--rank-color, var(--h-accent)) 0 3px, transparent 3px),
+          linear-gradient(90deg, color-mix(in srgb, var(--rank-color, var(--h-accent)) 16%, rgba(8, 20, 40, 0.85)), rgba(6, 16, 32, 0.82));
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
-@media (hover: hover) { .holo2 .tl-block:hover { box-shadow: inset 3px 0 0 var(--rank-color, var(--h-accent)), inset 0 0 0 1px var(--h-line), inset 0 0 26px rgba(70, 200, 255, 0.18); } }
+@media (hover: hover) {
+  .holo2 .tl-block:hover {
+    --edge: var(--h-ice);
+    --fill: linear-gradient(90deg, var(--rank-color, var(--h-accent)) 0 3px, transparent 3px),
+            radial-gradient(120% 160% at 50% 50%, transparent 55%, rgba(70, 200, 255, 0.22)),
+            linear-gradient(90deg, color-mix(in srgb, var(--rank-color, var(--h-accent)) 24%, rgba(8, 20, 40, 0.85)), rgba(10, 26, 52, 0.85));
+    box-shadow: none;
+    transform: scale(1.03);
+    z-index: 2;
+  }
+}
 .holo2 .tl-now { border-top-color: #bff0ff; box-shadow: 0 0 10px #46c8ff, 0 0 2px #fff; }
 
 /* Menu cards in "Ещё" */

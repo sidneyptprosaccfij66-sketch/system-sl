@@ -37,3 +37,29 @@ test('holographic prototype respects reduced motion', async () => {
     assert.equal(css, 0);
   } finally { await app.close(); }
 });
+
+for (const width of [390, 650, 1440]) {
+  test(`tab and button labels fit at ${width}px`, async () => {
+    const app = await open({ viewport: { width, height: 900 } });
+    try {
+      const tasks = app.page.locator('[data-section="tasks"]');
+      await tasks.scrollIntoViewIfNeeded();
+      const clipped = await tasks.evaluate((sec) => [...sec.querySelectorAll('.seg-btn, .btn')]
+        .filter((b) => b.offsetParent && b.scrollWidth > b.clientWidth + 1).map((b) => b.textContent));
+      assert.deepEqual(clipped, []);
+    } finally { await app.close(); }
+  });
+}
+
+test('chamfered controls draw a complete outline layer (incl. diagonals)', async () => {
+  const app = await open({});
+  try {
+    const r = await app.page.evaluate(() => {
+      const b = document.querySelector('.tl-block');
+      const after = getComputedStyle(b, '::after');
+      return { content: after.content, clip: after.clipPath, bg: getComputedStyle(b).backgroundImage + getComputedStyle(b).backgroundColor };
+    });
+    assert.notEqual(r.content, 'none');
+    assert.match(r.clip, /polygon/);
+  } finally { await app.close(); }
+});
