@@ -1,3 +1,2 @@
-import { createRoot } from 'react-dom/client';
-
-createRoot(document.getElementById('root')!).render(<div style={{ color: '#e6f1ff', fontFamily: 'sans-serif', padding: 24 }}>THE SYSTEM</div>);
+// Stage 1: the app entry is the sign-in probe until the real shell lands (plan Task 13).
+import './probe';
