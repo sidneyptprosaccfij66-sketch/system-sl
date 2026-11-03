@@ -7,8 +7,8 @@ import { GateBadge } from '../fx/gateBadge';
 import { TaskEditor, TaskRow, useToggleTask, type EditorTarget } from '../components/tasks';
 import { relDay } from '../components/format';
 
-type Tab = 'upcoming' | 'nodate' | 'quests' | 'done';
-const TABS: [Tab, string][] = [['upcoming', 'Предстоящие'], ['nodate', 'Без даты'], ['quests', 'Квесты'], ['done', 'Выполненные']];
+type Tab = 'all' | 'upcoming' | 'nodate' | 'quests' | 'done';
+const TABS: [Tab, string][] = [['all', 'Все'], ['upcoming', 'Предстоящие'], ['nodate', 'Без даты'], ['quests', 'Квесты'], ['done', 'Выполненные']];
 
 function QuestCard({ q, onOpen }: { q: Task; onOpen: (t: Task) => void }) {
   const engine = useEngine();
@@ -42,7 +42,7 @@ export function TasksScreen() {
   const s = useGame();
   const engine = useEngine();
   const today = todayKey(s, engine.now());
-  const [tab, setTab] = useState<Tab>('upcoming');
+  const [tab, setTab] = useState<Tab>('all');
   const [editing, setEditing] = useState<EditorTarget | null>(null);
   const open = (t: Task) => setEditing({ task: t, kind: t.kind });
   const all = Object.values(s.tasks);
@@ -53,6 +53,7 @@ export function TasksScreen() {
   for (const t of upcoming) groups.set(t.dueDay!, [...(groups.get(t.dueDay!) ?? []), t]);
   const noDate = tasks.filter((t) => t.status === 'open' && !t.dueDay);
   const quests = all.filter((t) => t.kind === 'quest' && t.status !== 'done' && t.status !== 'archived').sort((a, b) => (a.questType === 'main' ? 0 : 1) - (b.questType === 'main' ? 0 : 1) || a.createdAt - b.createdAt);
+  const overdue = tasks.filter((t) => t.dueDay && t.dueDay < today && (t.status === 'open' || t.status === 'failed'));
   const done = all.filter((t) => t.status === 'done').sort((a, b) => (b.completedAt ?? 0) - (a.completedAt ?? 0)).slice(0, 50);
 
   return (
@@ -69,6 +70,28 @@ export function TasksScreen() {
       </div>
       <section className="panel" role="tabpanel">
         <div className="panel-body">
+          {tab === 'all' && (overdue.length + quests.length + upcoming.length + noDate.length === 0
+            ? <p className="empty">Пока ни одного дела. Добавь задание или квест кнопками выше.</p>
+            : <>
+                {overdue.length > 0 && <>
+                  <p className="date-group is-warn">Просрочено</p>
+                  <div className="list">{overdue.map((t) => <TaskRow key={t.id} task={t} onOpen={open} sub={relDay(t.dueDay!, today)} />)}</div>
+                </>}
+                {quests.length > 0 && <>
+                  <p className="date-group">Квесты</p>
+                  {quests.map((q) => <QuestCard key={q.id} q={q} onOpen={open} />)}
+                </>}
+                {[...groups].map(([day, list]) => (
+                  <div key={day}>
+                    <p className="date-group">{relDay(day, today)}</p>
+                    <div className="list">{list.map((t) => <TaskRow key={t.id} task={t} onOpen={open} sub={t.dueTime ? `${t.dueTime}${t.endTime ? `–${t.endTime}` : ''}` : undefined} />)}</div>
+                  </div>
+                ))}
+                {noDate.length > 0 && <>
+                  <p className="date-group">Без даты</p>
+                  <div className="list">{noDate.map((t) => <TaskRow key={t.id} task={t} onOpen={open} />)}</div>
+                </>}
+              </>)}
           {tab === 'upcoming' && (upcoming.length === 0 ? <p className="empty">Нет заданий с датой. Добавь задание и выбери день.</p> :
             [...groups].map(([day, list]) => (
               <div key={day}>

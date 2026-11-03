@@ -204,10 +204,13 @@
 .step { display: flex; align-items: center; gap: 10px; font-size: var(--t-sm); }
 .step.is-done span { color: var(--muted); text-decoration: line-through; }
 .step .check { width: 20px; height: 20px; }
-.tabs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+.tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.tabs .seg-btn:first-child { grid-column: 1 / -1; }
+.date-group.is-warn { color: #ff9aa5; }
 .tabs .seg-btn { min-height: 40px; }
 .tabs .seg-btn[aria-selected='true'] { border-color: var(--holo-line); background: rgba(40, 100, 170, 0.45); color: #fff; box-shadow: var(--holo-glow); }
-@media (min-width: 600px) { .tabs { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 420px) { .tabs { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 600px) { .tabs { grid-template-columns: repeat(5, 1fr); } .tabs .seg-btn:first-child { grid-column: auto; } }
 
 /* ---------- Skills ---------- */
 .skill { display: grid; gap: 12px; padding: 18px 0; border-bottom: 1px solid rgba(120, 190, 255, 0.08); }
