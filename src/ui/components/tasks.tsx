@@ -155,12 +155,12 @@ export function TaskEditor({ target, onClose }: { target: EditorTarget; onClose:
         <span className="reward">+{RANK_POINTS[rank]} {shownStat}</span>
       </div>
       <RankPicker value={rank} onChange={setRank} />
-      <Field label="Дата"><input className="input" type="date" value={dueDay} min={t ? undefined : today} onChange={(e) => setDueDay(e.target.value)} /></Field>
+      <Field label="Дата"><input className="input" type="date" value={dueDay} min={t ? undefined : today} disabled={Boolean(lockedReschedule)} onChange={(e) => setDueDay(e.target.value)} /></Field>
       {dueDay && (
         <div className="time-row">
-          <input className="input" type="time" aria-label="С" value={from} onChange={(e) => setFrom(e.target.value)} />
+          <input className="input" type="time" aria-label="С" value={from} disabled={Boolean(lockedReschedule)} onChange={(e) => setFrom(e.target.value)} />
           <span className="muted">—</span>
-          <input className="input" type="time" aria-label="До" value={to} onChange={(e) => setTo(e.target.value)} />
+          <input className="input" type="time" aria-label="До" value={to} disabled={Boolean(lockedReschedule)} onChange={(e) => setTo(e.target.value)} />
         </div>
       )}
       {isQuest && (

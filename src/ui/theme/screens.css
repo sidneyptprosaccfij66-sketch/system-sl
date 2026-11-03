@@ -130,6 +130,7 @@
 }
 .textarea { min-height: 96px; resize: vertical; }
 .input:focus, .select:focus, .textarea:focus { outline: none; border-color: var(--holo-line); box-shadow: var(--holo-glow); }
+.input:disabled, .select:disabled { opacity: 0.45; cursor: not-allowed; }
 .input::placeholder, .textarea::placeholder { color: #5f7290; }
 .qa { display: grid; gap: 14px; }
 .qa-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
